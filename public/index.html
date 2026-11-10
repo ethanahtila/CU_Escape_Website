@@ -1,0 +1,7 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CU Escape</title><style>body{background:#10262c;color:#e8e6d2;font:18px system-ui;display:grid;place-content:center;min-height:90vh;text-align:center}a{color:#f1ce79;margin:12px;padding:12px;border:1px solid #52756e;border-radius:8px;text-decoration:none}</style></head><body><h1>CU Escape</h1><p>Opening your game…</p><nav><a id="desktop" href="/desktop">Computer controls</a><a id="mobile" href="/mobile">Phone / tablet controls</a></nav><script>
+const query=new URLSearchParams(location.search),room=query.get('room');
+const suffix=room&&/^[A-Za-z0-9_-]{1,32}$/.test(room)?'?room='+encodeURIComponent(room):'';
+for(const mode of ['desktop','mobile'])document.getElementById(mode).href='/'+mode+suffix;
+const touch=matchMedia('(pointer: coarse)').matches||navigator.maxTouchPoints>1;
+location.replace('/'+(touch?'mobile':'desktop')+suffix);
+</script></body></html>
