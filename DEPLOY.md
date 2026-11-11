@@ -32,8 +32,8 @@ Open `http://localhost:3000`. Local development uses `ws://`; production HTTPS a
 
 This package contains the game, Node server, and WSS relay, but it does not include a hosting account, GitHub repository, domain, or deployed public URL. Those must be created/authorized by the site owner. A static website host alone cannot run the multiplayer relay.
 
-## Updating the existing live service to 1.1.2
+## Updating the existing live service to 1.1.3
 
 Replace the deployed repository contents with this package and redeploy the existing service; keep its current URL and hosting settings. This archive keeps package.json and public/ at the ZIP root. Everyone should refresh the game after deployment, because multiplayer protocol 22 requires matching clients. A deployment restarts the relay and ends current connections, so update between rounds. No live deployment was performed while preparing this archive.
 
-Version 1.1.2 includes changes to both public HTML clients and server.cjs (registered player names), plus protocol 22. Update all files together, let Render finish its deployment, then refresh every player's game tab before starting a new room. Controls are E for interactions, Shift+E for vents, and Space for jump.
+Version 1.1.3 includes changes to both public HTML clients and server.cjs (registered player names), plus protocol 22. Update all files together, let Render finish its deployment, then refresh every player's game tab before starting a new room. Controls are E for interactions, Shift+E for vents, and Space for jump.

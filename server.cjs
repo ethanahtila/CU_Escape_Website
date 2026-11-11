@@ -87,14 +87,14 @@ function createGameServer(options = {}) {
     }
     if (clientCount() >= maxClients) { error(ws, 'server_full', 'The game server is full.'); ws.close(1013); return; }
     let room = rooms.get(name);
-    if (!room) { room = { players: new Map(), nextId: 1, host: null }; rooms.set(name, room); }
+    if (!room) { room = { name, phase:'lobby', players: new Map(), nextId: 1, host: null }; rooms.set(name, room); }
     if (room.players.size >= maxPlayers) { error(ws, 'game_full', 'This room already has 16 students. Choose another room.'); ws.close(1008); return; }
     const id = room.nextId++;
     ws.playerId = id; ws.playerName=displayName||'Student '+id; ws.alive = true;
     let tokens = 60, lastRefill = Date.now();
     room.players.set(id, ws); room.host = Math.min(...room.players.keys());
     // Welcome is queued first, so a new student knows their identity before a snapshot arrives.
-    send(ws, { type: 'welcome', playerId: id, players: [...room.players.keys()],playerNames:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.playerName])) });
+    send(ws, { type: 'welcome', room:room.name, playerId: id, players: [...room.players.keys()],playerNames:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.playerName])) });
     broadcast(room, { type: 'player_joined', playerId: id, name:ws.playerName }, ws);
     ws.on('pong', () => { ws.alive = true; });
     ws.on('error', () => {});
@@ -106,18 +106,19 @@ function createGameServer(options = {}) {
       let message;
       try { message = JSON.parse(bytes.toString()); } catch { error(ws, 'invalid_json', 'Invalid JSON.'); return; }
       if (!message || typeof message !== 'object' || Array.isArray(message)) { error(ws, 'invalid_message', 'Invalid game message.'); return; }
-      if (!['ens_state', 'ens_input', 'ens_action', 'ens_sync'].includes(message.type)) { error(ws, 'invalid_message', 'Unsupported game message.'); return; }
+      if (!['ens_state', 'ens_input', 'ens_action', 'ens_sync', 'ens_room'].includes(message.type)) { error(ws, 'invalid_message', 'Unsupported game message.'); return; }
+      if(message.type==='ens_room'){if(id!==room.host){error(ws,'host_only','Only the host can rename the room.');return;}if(room.phase!=='lobby'){error(ws,'round_active','Return the group to the lobby before renaming.');return;}const next=message.room;if(typeof next!=='string'||!/^[A-Za-z0-9_-]{1,32}$/.test(next)){error(ws,'invalid_game_id','Invalid room name.');return;}if(next===room.name)return;if(rooms.has(next)){error(ws,'room_exists','That room name is already in use. Choose another name.');return;}rooms.delete(room.name);room.name=next;rooms.set(next,room);broadcast(room,{type:'room_renamed',room:next});return;}
       if (message.type === 'ens_state' && (id !== room.host || message.host !== id)) { error(ws, 'host_only', 'Only the current host may publish game state.'); return; }
-      if (message.type === 'ens_action' && !['start', 'restart', 'use', 'locker', 'elevator_button', 'drop_key', 'reenter'].includes(message.action)) { error(ws, 'invalid_message', 'Unsupported action.'); return; }
-      if (message.type === 'ens_action' && ['start', 'restart'].includes(message.action) && id !== room.host) { error(ws, 'host_only', 'Only the host may start or restart the round.'); return; }
+      if (message.type === 'ens_action' && !['start', 'restart', 'lobby', 'use', 'locker', 'elevator_button', 'drop_key', 'reenter'].includes(message.action)) { error(ws, 'invalid_message', 'Unsupported action.'); return; }
+      if (message.type === 'ens_action' && ['start', 'restart', 'lobby'].includes(message.action) && id !== room.host) { error(ws, 'host_only', 'Only the host may start or restart the round.'); return; }
       const verified = { ...message, playerId: id };
-      if (message.type === 'ens_state') broadcast(room, verified, ws);
+      if (message.type === 'ens_state') {room.phase=message.phase;broadcast(room, verified, ws);}
       else if (room.host !== id) send(room.players.get(room.host), verified);
     });
     ws.on('close', () => {
       if (room.players.get(id) !== ws) return;
       room.players.delete(id);
-      if (!room.players.size) { rooms.delete(name); return; }
+      if (!room.players.size) { rooms.delete(room.name); return; }
       room.host = Math.min(...room.players.keys());
       broadcast(room, { type: 'player_left', playerId: id });
     });

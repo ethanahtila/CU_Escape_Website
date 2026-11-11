@@ -1,31 +1,37 @@
-# CU Escape Website — release 1.1.2
+# CU Escape Website — release 1.1.3
 
 This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
 
-## Current update: 1.1.2
+## Current update: 1.1.3
 
-Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 22.
+Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 23.
 
 ### Controls
 
 - WASD moves. Mouse movement / right-side touch dragging looks left, right, up and down. Arrow keys also turn and tilt the view.
-- E is the single world-interaction key: collect keys/papers, use or leave lockers, open/call elevators, aim at a small floor button to select it, rescue, unlock/open the exit, or return from outside to rescue.
-- Shift + E crawls through a nearby vent. On mobile, toggle crouch and tap USE.
+- F is the single world-interaction key: collect keys/papers, use or leave lockers, open/call elevators, aim at a small floor button to select it, rescue, unlock/open the exit, or return from outside to rescue.
+- Shift + F crawls through a nearby vent. On mobile, toggle crouch and tap USE.
 - Space jumps. Mobile has a JUMP button. Players can jump onto suitable tables/desks/chairs and move over them; entities stay on the floor and must navigate around furniture. Only sufficiently high airborne jumps evade contact; standing on a desk is not an immunity state.
-- If carrying keys/papers and no nearby object has an interaction, E drops one carried item. The on-screen action hint indicates this. M opens the map; I opens the puzzle inventory.
+- If carrying keys/papers and no nearby object has an interaction, F drops one carried item. The on-screen action hint indicates this. M opens the map; I opens the puzzle inventory.
 
 ### Rooms and graphics
 
-Every room in both maps, including annex rooms, has a sample defining fixed furnishing groups and possible collectible, vent and locker slots. A deterministic subset of those furnishing groups is copied into the room, so classroom rows/office furniture stay in place between matches. Jail samples remain empty. The café keeps its existing layout.
+Every room in both maps, including annex rooms, has a sample defining fixed furnishing groups and possible collectible, vent and locker slots. The 160 individually keyed room profiles preserve the buildings’ original object types, with a separate anchor list for each room. Fixtures fit the actual room shape while maintaining door approaches, and stay in the same positions across matches and devices. Jail samples remain empty. The café keeps its existing layout.
 
-Furniture uses grounded 3D meshes with table/chair legs, beveled tops, monitors, shelves, lecterns, plants and wall-mounted boards. Players and entities share physical collision geometry; monitors, chair backs and lockers are also solid. Keys and paper fragments are flat on the ground, without bobbing or hover effects, including dropped items. The sample generator preserves door approaches and connected walking paths. Random interactive items are selected from its clear, fixed slots.
+Furniture uses grounded 3D meshes with table/chair legs, beveled tops, monitors, shelves, lecterns, plants and wall-mounted boards. Players and entities share physical collision geometry; monitors, chair backs and lockers are also solid. Keys and paper fragments are smaller physical meshes resting on the ground, with thin visible edges and a very faint ground glow, including dropped items. The sample generator preserves door approaches and connected walking paths. Random interactive items are selected from its clear, fixed slots.
 
 ### Local audio and player names
 
 The menu has a player-name field and separate entity-footstep and chase-music sliders, alongside background/capture music controls and the master mute. Preferences are stored locally in that browser. Names apply on the next join (or immediately for solo), are limited to 20 characters, and appear on player labels, the team list and the full map.
 
-Footsteps are audible within the entity sight range plus three tiles on the same floor, with distance attenuation and wall muffling. Chase music plays only for the local player while an entity has range and clear line of sight. It stops on lost sight or hiding, and gives priority to the Doxology on capture. Alert callouts use the generic Loud noise label for elevators, rescue-expiry reveals and keypad alarms.
+Footsteps are audible within sight range plus six tiles on the same floor, with distance attenuation and wall muffling. A louder 156 BPM chase score layers a driving bass line, upper ostinato and percussion. It starts with clear line of sight up to three tiles beyond entity sight; this does not change entity detection. Once the exit opens and the permanent entity buffs activate, chase music plays for every player across all floors and hiding states until the round ends. Capture Doxology still takes priority. Locker and vent creaks never trigger AI alerts. Elevator doors slide and ding on opening and closing; an original light instrumental loop plays only inside the car. New effects and elevator-music sliders are saved independently with existing audio preferences. Alert callouts use the generic Loud noise label for elevators, rescue-expiry reveals and keypad alarms.
 
+
+### Play another round with the same group
+
+At the end of a multiplayer round, the host chooses Menu or New randomized round to return the entire connected group to the lobby. The host can then change the map, mode and difficulty and choose Start round. During a round, Return group to lobby is also available in the host’s menu. Guests wait for the host. No page reload or new room is needed.
+
+In the lobby, the host can edit the room-name field and select Rename room for everyone. The relay moves the existing group together, retains player IDs/names and rejects occupied names. Copy room link uses the actual connected room. Leave room exits the group without reloading the page.
 
 ## Publish once
 
@@ -98,3 +104,5 @@ Local verification includes simulated delayed updates, partial acknowledgments, 
 Verification result for this package: all 19 included tests passed, including three full game clients through the real relay and delayed-update movement simulations.
 
 Release 1.1.2 verification: 29 tests passed covering grounded room samples and collision, reachable interactive slots across both maps and expansion tiers, jump physics and partial movement acknowledgment, vertical elevator aiming, flat collectible geometry, local audio/mute/capture transitions, shared player names and host transfer, and full clients through the real relay. Native canvas renders were inspected for classroom furniture, compact elevator buttons and vertical views. These are local checks; the update still needs deployment and a live device/network playtest.
+
+Release 1.1.3 verification: 35 tests passed, including repeated multiplayer rounds with map/mode/difficulty changes, whole-group room renaming and host handoff, original room-object profiles across expansion tiers, F interactions, reachable spawns, physical collectibles with a faint glow, and audio/mute/finale transitions. Native canvas renders were inspected for the smaller pickups and visible edges. The sounds are synthesized in-browser; subjective music balance and campus-network/device performance still need a live playtest after redeployment.
