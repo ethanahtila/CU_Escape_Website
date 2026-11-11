@@ -1,10 +1,14 @@
-# CU Escape Website — release 1.1.3
+# CU Escape Website — release 1.1.5
 
 This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
 
-## Current update: 1.1.3
+## Current update: 1.1.5
 
-Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 23.
+Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 24.
+
+### Elevator inspection
+
+After the opening alert delay, entities investigate the elevator as before. Each entity that reaches the landing checks it for three seconds, then resumes hunting. Once those checks finish (or another entity is diverted to a player/another alert), the empty car closes in place. Doors wait for students and entities to clear the cabin and threshold. Closing does not send the elevator to another floor or trigger a new AI alert. Players use F to open/call the elevator again; the existing eight-second outside-call and fifteen-second arrival delays remain. Inspection progress is shared in snapshots and survives host handoff.
 
 ### Controls
 
@@ -24,7 +28,7 @@ Furniture uses grounded 3D meshes with table/chair legs, beveled tops, monitors,
 
 The menu has a player-name field and separate entity-footstep and chase-music sliders, alongside background/capture music controls and the master mute. Preferences are stored locally in that browser. Names apply on the next join (or immediately for solo), are limited to 20 characters, and appear on player labels, the team list and the full map.
 
-Footsteps are audible within sight range plus six tiles on the same floor, with distance attenuation and wall muffling. A louder 156 BPM chase score layers a driving bass line, upper ostinato and percussion. It starts with clear line of sight up to three tiles beyond entity sight; this does not change entity detection. Once the exit opens and the permanent entity buffs activate, chase music plays for every player across all floors and hiding states until the round ends. Capture Doxology still takes priority. Locker and vent creaks never trigger AI alerts. Elevator doors slide and ding on opening and closing; an original light instrumental loop plays only inside the car. New effects and elevator-music sliders are saved independently with existing audio preferences. Alert callouts use the generic Loud noise label for elevators, rescue-expiry reveals and keypad alarms.
+Footsteps are audible within sight range plus six tiles on the same floor, with distance attenuation and wall muffling. Every new chase independently chooses one of two original action scores with equal probability: Night Signal at 188 BPM (distorted bass, bent synth stabs and industrial break percussion) or Redline at 204 BPM (racing arpeggios, layered synth strings and heavy drums). Both are faster than the previous 156 BPM score. The selection stays fixed during the chase and survives brief menu/mute pauses. A soft distortion stage and output compressor control the denser mix. These are original synthesized compositions with the requested broad cinematic moods, not film recordings or recreated film melodies. It starts with clear line of sight up to three tiles beyond entity sight; this does not change entity detection. Once the exit opens and the permanent entity buffs activate, chase music plays for every player across all floors and hiding states until the round ends. Capture Doxology still takes priority. Locker and vent creaks never trigger AI alerts. Elevator doors slide and ding on opening and closing; an original light instrumental loop plays only inside the car. New effects and elevator-music sliders are saved independently with existing audio preferences. Alert callouts use the generic Loud noise label for elevators, rescue-expiry reveals and keypad alarms.
 
 
 ### Play another round with the same group
@@ -106,3 +110,7 @@ Verification result for this package: all 19 included tests passed, including th
 Release 1.1.2 verification: 29 tests passed covering grounded room samples and collision, reachable interactive slots across both maps and expansion tiers, jump physics and partial movement acknowledgment, vertical elevator aiming, flat collectible geometry, local audio/mute/capture transitions, shared player names and host transfer, and full clients through the real relay. Native canvas renders were inspected for classroom furniture, compact elevator buttons and vertical views. These are local checks; the update still needs deployment and a live device/network playtest.
 
 Release 1.1.3 verification: 35 tests passed, including repeated multiplayer rounds with map/mode/difficulty changes, whole-group room renaming and host handoff, original room-object profiles across expansion tiers, F interactions, reachable spawns, physical collectibles with a faint glow, and audio/mute/finale transitions. Native canvas renders were inspected for the smaller pickups and visible edges. The sounds are synthesized in-browser; subjective music balance and campus-network/device performance still need a live playtest after redeployment.
+
+Release 1.1.4 verification: 36 automated tests passed. New checks force both chase-score choices on desktop and mobile, verify faster scheduling and selection stability during playback/mute/menu pauses, and cover rerolling for a new chase, exit-finale music and capture priority. Other gameplay, lobby, room, relay and control checks remain included. Browser audio playback could not be exercised in this environment; listen on your actual device after deployment to judge the mix and musical feel.
+
+Release 1.1.5 verification: all 41 automated tests passed. Elevator checks cover investigation completion on both devices, waiting for both ENS entities, cabin/doorway clearance, closing without travel, reopening with F and the usual alert delay, normal passenger trips, and host handoff/late joining with inspection and door state preserved.
