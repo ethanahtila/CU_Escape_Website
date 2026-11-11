@@ -1,10 +1,14 @@
-# CU Escape Website — release 1.1.5
+# CU Escape Website — release 1.3.1
 
 This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
 
-## Current update: 1.1.5
+## Current update: 1.3.1
 
-Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 24.
+Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 25.
+
+### SBCC furniture
+
+SBCC now uses a dedicated physical furniture palette instead of ENS desks, lab benches and bookcases: drawer-pedestal executive desks, swivel chairs, pedestal conference/seminar tables, upholstered sofas, filing cabinets, credenzas, stone planters, framed digital displays, presentation podiums, padded theater seats, enclosed server racks and dual-screen security consoles. These have different silhouettes and modeled structural parts, not just changed colors. Each named room and annex room retains its fixed placement profile. Walkways and interactable spawn slots remain clear. Player/entity collision includes seat backs, sofa arms and console monitors. ENS furniture and the café fixtures/layout are retained.
 
 ### Elevator inspection
 
@@ -20,7 +24,7 @@ After the opening alert delay, entities investigate the elevator as before. Each
 
 ### Rooms and graphics
 
-Every room in both maps, including annex rooms, has a sample defining fixed furnishing groups and possible collectible, vent and locker slots. The 160 individually keyed room profiles preserve the buildings’ original object types, with a separate anchor list for each room. Fixtures fit the actual room shape while maintaining door approaches, and stay in the same positions across matches and devices. Jail samples remain empty. The café keeps its existing layout.
+Every room in both maps, including annex rooms, has a sample defining fixed furnishing groups and possible collectible, vent and locker slots. The 160 individually keyed room profiles define the ENS palette and the separate SBCC palette, with a separate anchor list for each room. Fixtures fit the actual room shape while maintaining door approaches, and stay in the same positions across matches and devices. Jail samples remain empty. The café keeps its existing layout.
 
 Furniture uses grounded 3D meshes with table/chair legs, beveled tops, monitors, shelves, lecterns, plants and wall-mounted boards. Players and entities share physical collision geometry; monitors, chair backs and lockers are also solid. Keys and paper fragments are smaller physical meshes resting on the ground, with thin visible edges and a very faint ground glow, including dropped items. The sample generator preserves door approaches and connected walking paths. Random interactive items are selected from its clear, fixed slots.
 
@@ -114,3 +118,5 @@ Release 1.1.3 verification: 35 tests passed, including repeated multiplayer roun
 Release 1.1.4 verification: 36 automated tests passed. New checks force both chase-score choices on desktop and mobile, verify faster scheduling and selection stability during playback/mute/menu pauses, and cover rerolling for a new chase, exit-finale music and capture priority. Other gameplay, lobby, room, relay and control checks remain included. Browser audio playback could not be exercised in this environment; listen on your actual device after deployment to judge the mix and musical feel.
 
 Release 1.1.5 verification: all 41 automated tests passed. Elevator checks cover investigation completion on both devices, waiting for both ENS entities, cabin/doorway clearance, closing without travel, reopening with F and the usual alert delay, normal passenger trips, and host handoff/late joining with inspection and door state preserved.
+
+Release 1.3.1 verification: all 43 automated tests passed, including disjoint ENS/SBCC furniture palettes, grounded SBCC geometry, detailed seat/sofa/monitor collision, matching desktop/mobile room profiles, accessible spawns and routes across expansion tiers, and unchanged ENS/cafe geometry. Native canvas views of an office, meeting room, cybersecurity room and auditorium were inspected. Existing lobby, relay, chase audio and elevator inspection tests remain included.
