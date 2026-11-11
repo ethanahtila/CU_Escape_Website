@@ -23,3 +23,18 @@ test('a connected group changes map, mode, difficulty and room name between cons
  a.nodes.room.value='same-group-renamed';F.advance(1500);a.E.renameRoom();await until(()=>group.every(v=>v.nodes.room.value==='same-group-renamed'));assert(!app.rooms.has('rounds'));assert.equal(app.rooms.get('same-group-renamed').players.size,3);
  const d=F.client(true,'same-group-renamed',RealSocket,origin,'Newcomer');await until(()=>d.E.ready&&Object.keys(a.E.state.players).length===4);assert.equal(d.E.me,4);a.E.act(1,'start');F.advance(1500);a.E.snapshot(true);await until(()=>[b,c,d].every(v=>v.E.state.phase==='running'));for(const v of [a,b,c,d]){assert.equal(v.E.state.mapId,'ens');assert.equal(v.E.state.gameModeId,'key');assert.equal(v.E.state.difficultyId,'easy');}for(const v of [a,b,c,d])v.run('socket.close()');await until(()=>app.rooms.size===0);
 });
+
+test('Join multiplayer and visible Start game controls enter playable rounds for a full group',async t=>{
+ const app=createGameServer();app.server.listen(0,'127.0.0.1');await once(app.server,'listening');t.after(()=>app.close());const origin='http://127.0.0.1:'+app.server.address().port;class RealSocket extends WebSocket{constructor(url){super(url,{origin});}}
+ async function join(mobile,room,map,mode){const c=F.client(mobile,null,RealSocket,origin);c.nodes.room.value=room;if(map)c.E.selectMap(map);if(mode)c.E.selectGameMode(mode);c.nodes.connect.onclick();await until(()=>c.E.ready);assert.equal(c.run('menu'),false);assert(c.nodes.menu.classList.contains('hidden'));assert(!c.nodes.lobbyBar.classList.contains('hidden'));assert.equal(c.nodes.error.textContent,'');assert(!c.nodes.resume.classList.contains('hidden'));return c;}
+ for(const [map,mode,mobileHost]of [['ens','key',false],['berg','puzzle',true]]){
+  const room='ui-entry-'+map,a=await join(mobileHost,room,map,mode),b=await join(!mobileHost,room),c=await join(false,room),group=[a,b,c];
+  assert(!a.nodes.startOnline.classList.contains('hidden'));assert(!a.nodes.startOnline.disabled);assert(b.nodes.startOnline.classList.contains('hidden'));assert(b.nodes.lobbyStatus.textContent.includes('Waiting for'));assert(b.nodes.roomConnection.textContent.includes('Connected to'));
+  b.nodes.lobbySettings.onclick();assert(b.run('menu'));assert(!b.nodes.resume.classList.contains('hidden'));b.nodes.resume.onclick();assert(!b.run('menu'));
+  a.nodes.startOnline.onclick();await until(()=>group.every(v=>v.E.state.phase==='running'&&!v.run('menu')));for(const v of group){assert(v.nodes.lobbyBar.classList.contains('hidden'));assert.equal(v.E.state.mapId,map);assert.equal(v.E.state.gameModeId,mode);v.run('drawWorld=()=>{};mapDraw=()=>{};updateUI=()=>{}');}
+  for(const p of Object.values(a.E.state.players))Object.assign(p,{f:0,x:21.5,y:21.5,a:0,safe:9999});a.run('moveHunter=()=>{}');F.advance(1500);a.E.snapshot(true);await until(()=>Math.abs(b.E.local.x-21.5)<.01);const start=b.E.local.x;b.run('keysDown.w=true;local.a=0');for(let i=0;i<30;i++){F.advance(16);for(const v of group)v.E.frame(F.now);await new Promise(r=>setTimeout(r,6));}assert(a.E.state.players[2].x>start+.5);assert(b.E.local.x>start+.5);b.run('keysDown.w=false');
+  F.advance(1500);a.E.returnToLobby();await until(()=>b.E.state.phase==='lobby'&&c.E.state.phase==='lobby');assert(a.run('menu'));assert(b.run('menu'));assert(!a.nodes.startRound.classList.contains('hidden'));F.advance(1500);a.nodes.startRound.onclick();await until(()=>group.every(v=>v.E.state.phase==='running'&&!v.run('menu')));
+  for(const v of group)v.run('socket.close()');await until(()=>!app.rooms.has(room));
+ }
+ assert.equal(F.warnings.length,0);
+});

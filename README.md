@@ -1,10 +1,14 @@
-# CU Escape Website — release 1.3.1
+# CU Escape Website — release 1.3.2
 
 This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
 
-## Current update: 1.3.1
+## Current update: 1.3.2
 
 Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 25.
+
+### Multiplayer room entry
+
+Successful joins now enter the 3D multiplayer lobby immediately. The host sees a visible Start game button; guests see the room/player count and who is hosting. Room settings remain available, and the menu always has Enter multiplayer lobby while waiting. Connection text clears once synchronization finishes. Starting from either button publishes a fresh round and opens gameplay for all clients. Returning the group to settings after a round still works.
 
 ### SBCC furniture
 
@@ -120,3 +124,5 @@ Release 1.1.4 verification: 36 automated tests passed. New checks force both cha
 Release 1.1.5 verification: all 41 automated tests passed. Elevator checks cover investigation completion on both devices, waiting for both ENS entities, cabin/doorway clearance, closing without travel, reopening with F and the usual alert delay, normal passenger trips, and host handoff/late joining with inspection and door state preserved.
 
 Release 1.3.1 verification: all 43 automated tests passed, including disjoint ENS/SBCC furniture palettes, grounded SBCC geometry, detailed seat/sofa/monitor collision, matching desktop/mobile room profiles, accessible spawns and routes across expansion tiers, and unchanged ENS/cafe geometry. Native canvas views of an office, meeting room, cybersecurity room and auditorium were inspected. Existing lobby, relay, chase audio and elevator inspection tests remain included.
+
+Release 1.3.2 verification: all 44 automated tests passed. New real-relay checks use the Join multiplayer and visible Start game button handlers for three clients, including a mobile host, on ENS Key Mode and SBCC Puzzle Mode. They verify entry leaves the settings overlay, lobby/waiting controls are visible, gameplay opens for everyone, remote movement reaches the host, and the same group can restart from the settings menu. These are local automated checks; the updated package still requires deployment and refreshing all players’ tabs.
