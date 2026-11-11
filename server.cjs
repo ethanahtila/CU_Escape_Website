@@ -76,11 +76,12 @@ function createGameServer(options = {}) {
     if (shuttingDown) { socket.end('HTTP/1.1 503 Service Unavailable\r\n\r\n'); return; }
     if (!originAllowed(req)) { socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); return; }
     const name = url.searchParams.get('gameId') || '';
+    const displayName=Array.from(String(url.searchParams.get('name')||'').replace(/[\u0000-\u001f\u007f<>]/g,'').replace(/\s+/g,' ').trim()).slice(0,20).join('');
     wss.handleUpgrade(req, socket, head, ws => {
-      wss.emit('connection', ws, name);
+      wss.emit('connection', ws, name, displayName);
     });
   });
-  wss.on('connection', (ws, name) => {
+  wss.on('connection', (ws, name, displayName) => {
     if (!/^[A-Za-z0-9_-]{1,32}$/.test(name)) {
       error(ws, 'invalid_game_id', 'Use a room name with 1–32 letters, numbers, underscores or hyphens.'); ws.close(1008); return;
     }
@@ -89,12 +90,12 @@ function createGameServer(options = {}) {
     if (!room) { room = { players: new Map(), nextId: 1, host: null }; rooms.set(name, room); }
     if (room.players.size >= maxPlayers) { error(ws, 'game_full', 'This room already has 16 students. Choose another room.'); ws.close(1008); return; }
     const id = room.nextId++;
-    ws.playerId = id; ws.alive = true;
+    ws.playerId = id; ws.playerName=displayName||'Student '+id; ws.alive = true;
     let tokens = 60, lastRefill = Date.now();
     room.players.set(id, ws); room.host = Math.min(...room.players.keys());
     // Welcome is queued first, so a new student knows their identity before a snapshot arrives.
-    send(ws, { type: 'welcome', playerId: id, players: [...room.players.keys()] });
-    broadcast(room, { type: 'player_joined', playerId: id }, ws);
+    send(ws, { type: 'welcome', playerId: id, players: [...room.players.keys()],playerNames:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.playerName])) });
+    broadcast(room, { type: 'player_joined', playerId: id, name:ws.playerName }, ws);
     ws.on('pong', () => { ws.alive = true; });
     ws.on('error', () => {});
     ws.on('message', (bytes, binary) => {

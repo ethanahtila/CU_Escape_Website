@@ -1,6 +1,31 @@
-# CU Escape Website — release 1.1.1
+# CU Escape Website — release 1.1.2
 
 This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
+
+## Current update: 1.1.2
+
+Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 22.
+
+### Controls
+
+- WASD moves. Mouse movement / right-side touch dragging looks left, right, up and down. Arrow keys also turn and tilt the view.
+- E is the single world-interaction key: collect keys/papers, use or leave lockers, open/call elevators, aim at a small floor button to select it, rescue, unlock/open the exit, or return from outside to rescue.
+- Shift + E crawls through a nearby vent. On mobile, toggle crouch and tap USE.
+- Space jumps. Mobile has a JUMP button. Players can jump onto suitable tables/desks/chairs and move over them; entities stay on the floor and must navigate around furniture. Only sufficiently high airborne jumps evade contact; standing on a desk is not an immunity state.
+- If carrying keys/papers and no nearby object has an interaction, E drops one carried item. The on-screen action hint indicates this. M opens the map; I opens the puzzle inventory.
+
+### Rooms and graphics
+
+Every room in both maps, including annex rooms, has a sample defining fixed furnishing groups and possible collectible, vent and locker slots. A deterministic subset of those furnishing groups is copied into the room, so classroom rows/office furniture stay in place between matches. Jail samples remain empty. The café keeps its existing layout.
+
+Furniture uses grounded 3D meshes with table/chair legs, beveled tops, monitors, shelves, lecterns, plants and wall-mounted boards. Players and entities share physical collision geometry; monitors, chair backs and lockers are also solid. Keys and paper fragments are flat on the ground, without bobbing or hover effects, including dropped items. The sample generator preserves door approaches and connected walking paths. Random interactive items are selected from its clear, fixed slots.
+
+### Local audio and player names
+
+The menu has a player-name field and separate entity-footstep and chase-music sliders, alongside background/capture music controls and the master mute. Preferences are stored locally in that browser. Names apply on the next join (or immediately for solo), are limited to 20 characters, and appear on player labels, the team list and the full map.
+
+Footsteps are audible within the entity sight range plus three tiles on the same floor, with distance attenuation and wall muffling. Chase music plays only for the local player while an entity has range and clear line of sight. It stops on lost sight or hiding, and gives priority to the Doxology on capture. Alert callouts use the generic Loud noise label for elevators, rescue-expiry reveals and keypad alarms.
+
 
 ## Publish once
 
@@ -54,7 +79,7 @@ Alternatively, set both TLS_CERT_PATH and TLS_KEY_PATH to valid certificate/key 
 
 Opening the exit starts permanent double-speed pursuit for every active entity (including both ENS entities), with building-wide tracking even in solo. Unlocking without opening the doors does not trigger it. Puzzle Mode triggers the same phase when the correct code opens the exit. Hiding and rescue immunity still work.
 
-The round wins when everyone is outside and loses only when everyone is jailed. Outside players may use F / USE to return if a teammate is jailed. Jailed players can move and turn within the empty barred cell but cannot leave or interact. Rescuing teleports prisoners just outside the cell; they receive five seconds of immunity and the rescuer receives two. When each immunity ends, entities receive that player's location at that moment for a ten-second investigation. The timers survive late joins and host transfers.
+The round wins when everyone is outside and loses only when everyone is jailed. Outside players may use E / USE to return if a teammate is jailed. Jailed players can move and turn within the empty barred cell but cannot leave or interact. Rescuing teleports prisoners just outside the cell; they receive five seconds of immunity and the rescuer receives two. When each immunity ends, entities receive that player's location at that moment for a ten-second investigation. The timers survive late joins and host transfers.
 
 Additional release checks passed for jail confinement and movement on both maps/devices; correct 5s/2s rescue immunity and expiration reveals; rescue timers across host transfer; outside-player reentry and loss/win conditions; permanent final pursuit; and three real TLS-validated WSS connections with HTTPS game serving. The WSS test used a temporary local development certificate, not a public certificate or deployed domain.
 
@@ -71,3 +96,5 @@ This update was built from the supplied live-deployment archive. Hosting routes,
 Local verification includes simulated delayed updates, partial acknowledgments, camera/stair/jail correction, shared discovery with late join/host handoff, key ownership/HUD agreement, gradual scaling and entity separation, plus three full game clients through the actual relay. Campus-network latency and device performance still require a live playtest after redeployment.
 
 Verification result for this package: all 19 included tests passed, including three full game clients through the real relay and delayed-update movement simulations.
+
+Release 1.1.2 verification: 29 tests passed covering grounded room samples and collision, reachable interactive slots across both maps and expansion tiers, jump physics and partial movement acknowledgment, vertical elevator aiming, flat collectible geometry, local audio/mute/capture transitions, shared player names and host transfer, and full clients through the real relay. Native canvas renders were inspected for classroom furniture, compact elevator buttons and vertical views. These are local checks; the update still needs deployment and a live device/network playtest.
