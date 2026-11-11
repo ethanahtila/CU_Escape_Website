@@ -1,10 +1,10 @@
-# CU Escape Website — release 1.1.0
+# CU Escape Website — release 1.1.1
 
-This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. It is prepared for hosting; it has NOT been published and has no public game URL yet.
+This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
 
 ## Publish once
 
-A website-hosting account or university-managed Node.js server is required. Your ChatGPT workspace currently disables publishing integrations.
+Use your existing hosting service to redeploy this update. The first-time setup below is only needed when moving to a new host.
 
 One supported hosting route is Render:
 
@@ -57,3 +57,17 @@ Opening the exit starts permanent double-speed pursuit for every active entity (
 The round wins when everyone is outside and loses only when everyone is jailed. Outside players may use F / USE to return if a teammate is jailed. Jailed players can move and turn within the empty barred cell but cannot leave or interact. Rescuing teleports prisoners just outside the cell; they receive five seconds of immunity and the rescuer receives two. When each immunity ends, entities receive that player's location at that moment for a ten-second investigation. The timers survive late joins and host transfers.
 
 Additional release checks passed for jail confinement and movement on both maps/devices; correct 5s/2s rescue immunity and expiration reveals; rescue timers across host transfer; outside-player reentry and loss/win conditions; permanent final pursuit; and three real TLS-validated WSS connections with HTTPS game serving. The WSS test used a temporary local development certificate, not a public certificate or deployed domain.
+
+## Release 1.1.1 — multiplayer coordination and movement
+
+This update was built from the supplied live-deployment archive. Hosting routes, relay configuration, TLS/WSS support, maps, modes, per-player key ownership, exit surge, rescue/reentry and barred jail behavior are retained. Redeploy this entire package, then have every player refresh before joining. Protocol 21 requires all players to use the new update.
+
+- Each additional player adds 0.8% entity speed, 2.5% sight/memory/search duration and a small route-update increase. Ordinary multiplayer uses sight and memory rather than immediately knowing every player's position. The permanent double-speed, building-wide exit pursuit remains.
+- ENS entities that see one another within ten tiles for three continuous seconds choose separate reachable destinations for up to eight seconds. Walls and different floors reset the sight timer. SBCC still has only Dr. White.
+- Discovery from every player's authoritative position is combined into one team floor map, including landmark/enemy-marker visibility. New joins and host changes keep the accumulated discovery. It resets with the round.
+- The yellow key HUD now displays team-carried keys / remaining locks. Dropping or using a key decreases the shared carried total. The team list still shows individual inventories; only the carrier may unlock a door or drop that key. Used keys and dropped keys remain accounted for by the existing objective text. Puzzle inventory is unchanged.
+- Movement uses sequenced, acknowledged commands and replay of unprocessed inputs. Position corrections preserve camera heading; intentional vent-exit facing is preserved. Pointer-lock transitions and abandoned drags are reset, and repeated jail snapshots no longer clear held controls.
+
+Local verification includes simulated delayed updates, partial acknowledgments, camera/stair/jail correction, shared discovery with late join/host handoff, key ownership/HUD agreement, gradual scaling and entity separation, plus three full game clients through the actual relay. Campus-network latency and device performance still require a live playtest after redeployment.
+
+Verification result for this package: all 19 included tests passed, including three full game clients through the real relay and delayed-update movement simulations.
