@@ -87,11 +87,11 @@ function createGameServer(options = {}) {
     }
     if (clientCount() >= maxClients) { error(ws, 'server_full', 'The game server is full.'); ws.close(1013); return; }
     let room = rooms.get(name);
-    if (!room) { room = { name, phase:'lobby', players: new Map(), nextId: 1, host: null }; rooms.set(name, room); }
+    if (!room) { room = { name, phase:'lobby', roles:new Set(), round:null, players: new Map(), nextId: 1, host: null }; rooms.set(name, room); }
     if (room.players.size >= maxPlayers) { error(ws, 'game_full', 'This room already has 16 students. Choose another room.'); ws.close(1008); return; }
     const id = room.nextId++;
     ws.playerId = id; ws.playerName=displayName||'Student '+id; ws.alive = true;
-    let tokens = 60, lastRefill = Date.now();
+    let tokens = 120, lastRefill = Date.now();
     room.players.set(id, ws); room.host = Math.min(...room.players.keys());
     // Welcome is queued first, so a new student knows their identity before a snapshot arrives.
     send(ws, { type: 'welcome', room:room.name, playerId: id, players: [...room.players.keys()],playerNames:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.playerName])) });
@@ -99,25 +99,26 @@ function createGameServer(options = {}) {
     ws.on('pong', () => { ws.alive = true; });
     ws.on('error', () => {});
     ws.on('message', (bytes, binary) => {
-      const now = Date.now(); tokens = Math.min(60, tokens + (now - lastRefill) * .04); lastRefill = now;
+      const now = Date.now(); tokens = Math.min(120, tokens + (now - lastRefill) * .12); lastRefill = now;
       if (tokens < 1) { error(ws, 'rate_limited', 'Too many messages.'); ws.close(1008); return; }
       tokens -= 1;
       if (binary) { error(ws, 'invalid_message', 'Use JSON text messages.'); return; }
       let message;
       try { message = JSON.parse(bytes.toString()); } catch { error(ws, 'invalid_json', 'Invalid JSON.'); return; }
       if (!message || typeof message !== 'object' || Array.isArray(message)) { error(ws, 'invalid_message', 'Invalid game message.'); return; }
-      if (!['ens_state', 'ens_input', 'ens_action', 'ens_sync', 'ens_room'].includes(message.type)) { error(ws, 'invalid_message', 'Unsupported game message.'); return; }
+      if (!['ens_state', 'ens_input', 'ens_action', 'ens_sync', 'ens_room', 'ens_view'].includes(message.type)) { error(ws, 'invalid_message', 'Unsupported game message.'); return; }
       if(message.type==='ens_room'){if(id!==room.host){error(ws,'host_only','Only the host can rename the room.');return;}if(room.phase!=='lobby'){error(ws,'round_active','Return the group to the lobby before renaming.');return;}const next=message.room;if(typeof next!=='string'||!/^[A-Za-z0-9_-]{1,32}$/.test(next)){error(ws,'invalid_game_id','Invalid room name.');return;}if(next===room.name)return;if(rooms.has(next)){error(ws,'room_exists','That room name is already in use. Choose another name.');return;}rooms.delete(room.name);room.name=next;rooms.set(next,room);broadcast(room,{type:'room_renamed',room:next});return;}
       if (message.type === 'ens_state' && (id !== room.host || message.host !== id)) { error(ws, 'host_only', 'Only the current host may publish game state.'); return; }
-      if (message.type === 'ens_action' && !['start', 'restart', 'lobby', 'use', 'locker', 'elevator_button', 'drop_key', 'reenter'].includes(message.action)) { error(ws, 'invalid_message', 'Unsupported action.'); return; }
+      if (message.type === 'ens_action' && !['start', 'restart', 'lobby', 'use', 'locker', 'elevator_button', 'drop_key', 'reenter', 'spectate', 'spec_release', 'spec_fly', 'spec_follow', 'spec_siren', 'spec_boost', 'spec_use'].includes(message.action)) { error(ws, 'invalid_message', 'Unsupported action.'); return; }
       if (message.type === 'ens_action' && ['start', 'restart', 'lobby'].includes(message.action) && id !== room.host) { error(ws, 'host_only', 'Only the host may start or restart the round.'); return; }
+      if(message.type==='ens_view'){if(message.round!==room.round||!Number.isInteger(message.seq)||!message.camera||bytes.length>2048)return;for(const [peerId,peer]of room.players)if(peerId!==id&&room.roles.has(peerId))send(peer,{...message,playerId:id});return;}
       const verified = { ...message, playerId: id };
-      if (message.type === 'ens_state') {room.phase=message.phase;broadcast(room, verified, ws);}
+      if (message.type === 'ens_state') {room.phase=message.phase;room.round=message.round;if(Array.isArray(message.players))room.roles=new Set(message.players.filter(a=>Array.isArray(a)&&a[30]?.spectator).map(a=>a[0]));broadcast(room, verified, ws);}
       else if (room.host !== id) send(room.players.get(room.host), verified);
     });
     ws.on('close', () => {
       if (room.players.get(id) !== ws) return;
-      room.players.delete(id);
+      room.players.delete(id);room.roles.delete(id);
       if (!room.players.size) { rooms.delete(room.name); return; }
       room.host = Math.min(...room.players.keys());
       broadcast(room, { type: 'player_left', playerId: id });

@@ -1,16 +1,30 @@
-# CU Escape Website — release 1.3.3
+# CU Escape Website — release 1.3.4
 
 This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
 
-## Current update: 1.3.3
+## Current update: 1.3.4
 
-Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 26.
+Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 27.
+
+### Owner controls: spectator mode
+
+Alt + P toggles spectator mode after joining. There is no menu entry or public entry button. Ghost bodies and map arrows are invisible to ordinary players. Spectators stay listed as Students, cannot collect items/rescue/unlock, cannot be caught, do not reveal the shared map, and do not count toward difficulty/key scaling or student win/loss checks. Entering drops carried keys/papers. Leaving returns the student to the entrance with five seconds of immunity. Spectator status persists into a new round; controlled entities are released for that new round.
+
+- V toggles flying/following; [ and ] (or Tab) switch watched students. Buttons appear only once spectator mode is active.
+- Fly with WASD and mouse look, Space up and Shift down. Touch movement/look and Up/Down buttons are available after entry; entering on a phone requires a keyboard that can send Alt + P. Interior walls and furniture can be passed through; an envelope derived from each floor's outside boundary keeps flight inside the building.
+- Follow mode renders the watched player's live camera, pitch, crouch, map-open, vent and locker view. Paper inventory/keypad views are mirrored read-only; the briefing/settings menu is not shared. Camera/UI view packets are sent directly to spectators up to 25 times per second, while host world snapshots update up to 20 times per second. There is no deliberate multi-second delay; actual network/device latency remains unavoidable.
+- Q emits a loud synthesized siren heard across every floor for two seconds. It attracts AI entities to the ghost location (or watched student's location in follow mode). The host enforces a 20-second cooldown. Sound mute/effects volume remain per device.
+- F near an unoccupied entity takes control. WASD/mouse then control that entity using normal furniture collision and stairs; it cannot jump or crouch. Only one spectator may control each entity. F captures a nearby eligible student; if nobody can be captured, F calls/opens the elevator or selects the aimed floor button inside it. Captures keep existing vent/locker, jump and rescue-immunity protections and drop carried items normally. Controlled entities do not capture automatically.
+- E releases the entity back to AI. R activates a ten-second speed boost when ready. Existing energy readiness is retained (ENS White starts with 40 seconds); each activation recharges over the usual 28–52-second energy interval. The permanent exit boost still overrides the temporary ability. An existing AI activation also sets the recharge timer.
+- The controlled entity's map shows only its current sight-radius area and students within it, with no exploration history. Ghosts also have a local radius map for navigation; neither map modifies team discovery.
+
+Controller identity, ability readiness, roles, noise cooldown and positions are host-authoritative and shared in snapshots. They survive host handoff; a disconnect releases an entity, and a watched student's departure returns followers to flight. Direct view packets use relay-authenticated sender IDs and are delivered only to host-registered spectators. Alt + P is a hidden shortcut, not account-level access control.
 
 ### Crouching
 
 Hold Shift on desktop or toggle CROUCH on mobile. Crouching lowers the camera and avatar, slows movement by 25%, and reduces an unaware entity's spotting distance to 1.25 tiles with clear line of sight. Previously spotted students remain detectable while the entity remembers them. Noise investigations, alarm reveals, close-contact capture and the exit finale still apply.
 
-Maximum crouch duration is 15 seconds. Ending a session shorter than 10 seconds starts a cooldown of twice the crouched duration; at 10–15 seconds the cooldown equals the duration. Five seconds crouched means ten seconds recovery; fifteen means fifteen. Cooldowns advance with game time. Stairs, jumping, lockers, vents and capture force standing; stairs cannot be crouched through. Shift + F remains the vent interaction even while recovering. A HUD shows remaining crouch/recovery time. Player posture/timers and per-entity sight memory are shared in multiplayer and preserved through host transfer. No spectator mode is included in this release.
+Maximum crouch duration is 15 seconds. Ending a session shorter than 10 seconds starts a cooldown of twice the crouched duration; at 10–15 seconds the cooldown equals the duration. Five seconds crouched means ten seconds recovery; fifteen means fifteen. Cooldowns advance with game time. Stairs, jumping, lockers, vents and capture force standing; stairs cannot be crouched through. Shift + F remains the vent interaction even while recovering. A HUD shows remaining crouch/recovery time. Player posture/timers and per-entity sight memory are shared in multiplayer and preserved through host transfer. Spectator controls are documented in the owner section below.
 
 ### Join by room name
 
@@ -138,3 +152,5 @@ Release 1.3.1 verification: all 43 automated tests passed, including disjoint EN
 Release 1.3.2 verification: all 44 automated tests passed. New real-relay checks use the Join multiplayer and visible Start game button handlers for three clients, including a mobile host, on ENS Key Mode and SBCC Puzzle Mode. They verify entry leaves the settings overlay, lobby/waiting controls are visible, gameplay opens for everyone, remote movement reaches the host, and the same group can restart from the settings menu. These are local automated checks; the updated package still requires deployment and refreshing all players’ tabs.
 
 Release 1.3.3 verification: all 49 automated tests passed. Crouch tests cover 1/5/9.5/10/12/15-second sessions, exact tiered cooldowns, reduced speed/camera height, stairs/jump restrictions, automatic exhaustion, awareness-based detection, prediction/partial acknowledgments, snapshots and host handoff. Real-relay joining tests start with deliberately mismatched settings, verify room-name-only joining inherits the host settings, and verify late joins enter the running round. Native canvas standing/crouching views were inspected. No spectator implementation is included.
+
+Release 1.3.4 verification: all 61 automated tests passed. New tests cover Alt+P role entry, invisible ghost bodies/map arrows, Students-list naming, item/discovery/win-loss isolation, bounded flight, mobile flight controls, live camera/map following, radius-only map visibility, exclusive possession, manual captures, furniture collision, controlled elevator travel, existing/renewed ability recharge, global two-second Q siren timing and twenty-second cooldown, host handoff and controller disconnect. A real relay test delivers direct view packets to the observer while the ordinary host receives none, switches map state immediately, and preserves possession through host transfer. Native canvas entity-camera and radius-map renders were inspected. These are local checks; deployment and a live device/network playtest are still needed.
