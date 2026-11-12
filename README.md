@@ -1,10 +1,20 @@
-# CU Escape Website — release 1.3.2
+# CU Escape Website — release 1.3.3
 
 This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
 
-## Current update: 1.3.2
+## Current update: 1.3.3
 
-Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 25.
+Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 26.
+
+### Crouching
+
+Hold Shift on desktop or toggle CROUCH on mobile. Crouching lowers the camera and avatar, slows movement by 25%, and reduces an unaware entity's spotting distance to 1.25 tiles with clear line of sight. Previously spotted students remain detectable while the entity remembers them. Noise investigations, alarm reveals, close-contact capture and the exit finale still apply.
+
+Maximum crouch duration is 15 seconds. Ending a session shorter than 10 seconds starts a cooldown of twice the crouched duration; at 10–15 seconds the cooldown equals the duration. Five seconds crouched means ten seconds recovery; fifteen means fifteen. Cooldowns advance with game time. Stairs, jumping, lockers, vents and capture force standing; stairs cannot be crouched through. Shift + F remains the vent interaction even while recovering. A HUD shows remaining crouch/recovery time. Player posture/timers and per-entity sight memory are shared in multiplayer and preserved through host transfer. No spectator mode is included in this release.
+
+### Join by room name
+
+Only the room name is required to join an existing hosted game. The relay places the student with that host; snapshots replace the joining device’s map, mode and difficulty automatically. Local selections apply only when creating a new room. Selectors lock during synchronization, and the joining/status messages explain that the host’s settings are loading. Room names are case-sensitive.
 
 ### Multiplayer room entry
 
@@ -126,3 +136,5 @@ Release 1.1.5 verification: all 41 automated tests passed. Elevator checks cover
 Release 1.3.1 verification: all 43 automated tests passed, including disjoint ENS/SBCC furniture palettes, grounded SBCC geometry, detailed seat/sofa/monitor collision, matching desktop/mobile room profiles, accessible spawns and routes across expansion tiers, and unchanged ENS/cafe geometry. Native canvas views of an office, meeting room, cybersecurity room and auditorium were inspected. Existing lobby, relay, chase audio and elevator inspection tests remain included.
 
 Release 1.3.2 verification: all 44 automated tests passed. New real-relay checks use the Join multiplayer and visible Start game button handlers for three clients, including a mobile host, on ENS Key Mode and SBCC Puzzle Mode. They verify entry leaves the settings overlay, lobby/waiting controls are visible, gameplay opens for everyone, remote movement reaches the host, and the same group can restart from the settings menu. These are local automated checks; the updated package still requires deployment and refreshing all players’ tabs.
+
+Release 1.3.3 verification: all 49 automated tests passed. Crouch tests cover 1/5/9.5/10/12/15-second sessions, exact tiered cooldowns, reduced speed/camera height, stairs/jump restrictions, automatic exhaustion, awareness-based detection, prediction/partial acknowledgments, snapshots and host handoff. Real-relay joining tests start with deliberately mismatched settings, verify room-name-only joining inherits the host settings, and verify late joins enter the running round. Native canvas standing/crouching views were inspected. No spectator implementation is included.

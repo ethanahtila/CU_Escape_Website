@@ -38,3 +38,9 @@ test('Join multiplayer and visible Start game controls enter playable rounds for
  }
  assert.equal(F.warnings.length,0);
 });
+
+test('an existing room overrides mismatched map, mode and difficulty using only its room name',async t=>{const app=createGameServer();app.server.listen(0,'127.0.0.1');await once(app.server,'listening');t.after(()=>app.close());const origin='http://127.0.0.1:'+app.server.address().port;class RealSocket extends WebSocket{constructor(url){super(url,{origin});}}
+ const host=F.client(false,null,RealSocket,origin);host.E.selectMap('berg');host.E.selectGameMode('puzzle');host.E.selectDifficulty('extreme');host.nodes.room.value='host-owns-settings';host.nodes.connect.onclick();await until(()=>host.E.ready);
+ const guest=F.client(true,null,RealSocket,origin);guest.E.selectMap('ens');guest.E.selectGameMode('key');guest.E.selectDifficulty('easy');guest.nodes.room.value='host-owns-settings';guest.nodes.connect.onclick();assert.equal(guest.E.selectMap('ens'),false);await until(()=>guest.E.ready);assert.equal(guest.E.state.mapId,'berg');assert.equal(guest.E.state.gameModeId,'puzzle');assert.equal(guest.E.state.difficultyId,'extreme');assert.equal(guest.E.host,host.E.me);assert.equal(guest.run('menu'),false);
+ host.nodes.startOnline.onclick();await until(()=>guest.E.state.phase==='running');const late=F.client(false,null,RealSocket,origin);late.E.selectMap('ens');late.E.selectGameMode('key');late.E.selectDifficulty('normal');late.nodes.room.value='host-owns-settings';late.nodes.connect.onclick();await until(()=>late.E.ready);assert.equal(late.E.state.round,host.E.state.round);assert.equal(late.E.state.mapId,'berg');assert.equal(late.E.state.gameModeId,'puzzle');assert.equal(late.E.state.difficultyId,'extreme');assert.equal(late.E.state.phase,'running');assert.equal(F.warnings.length,0);
+});
