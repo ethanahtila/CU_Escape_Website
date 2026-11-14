@@ -2,7 +2,7 @@
 
 The project is configured for a Node.js 24 web service and a same-origin secure WebSocket relay. The game is not publicly live until it is deployed to a hosting account.
 
-For version 1.3.8 profiles, ranked and leaderboards, read **PERSISTENCE.md**. The existing free configuration still supports casual multiplayer, but permanent progression requires a persistent disk and the documented environment settings.
+For version 1.4.2 saved accounts, ranked and leaderboards, read **PERSISTENCE.md**. Add both `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to the existing service environment to use external storage without a paid Render disk. The game initializes its tables automatically. Local SQLite remains an alternative with persistent disk storage.
 
 ## Render deployment (no custom domain required)
 

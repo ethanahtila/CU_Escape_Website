@@ -1,32 +1,42 @@
-# Persistent rankings and profiles
+# Turso storage — update 1.4.2
 
-Version 1.3.8 includes the database and APIs, but this chat has not changed or deployed your Render service. Your existing free web-service configuration remains in `render.yaml`. Casual multiplayer continues to work there. On Render, profiles, leaderboards and ranked are disabled until persistent storage is explicitly configured, so temporary data is not presented as permanent progress.
+The game now connects directly to an external Turso/libSQL database. With this option, Render runs the game and multiplayer server; Turso stores accounts, password hashes, sessions, achievements, selected titles, ranks and leaderboards. A paid Render disk is not required for Turso mode. The connection is server-side; database credentials never belong in HTML or GitHub.
 
-## Existing Render service
+## Finish the setup you already started
 
-1. Commit **all** updated files to the existing GitHub repository. Keep Node 24 and one service instance.
-2. In Render, use a service plan that supports persistent disks and attach a disk mounted at `/var/data`. This requires a hosting change that can cost money; the package does not perform it.
-3. Set `CU_DATA_FILE=/var/data/cu-escape.sqlite` and `CU_PERSISTENT_STORAGE=1` in that service's environment, then deploy.
-4. Visit `/api/status` on your game URL and confirm `persistent` is `true`. Test five separate profiles joining Ranked and a published casual win. Reload and redeploy to verify your records remain.
+1. Extract this archive and upload **all its contents** to the root of your existing linked GitHub repository, replacing the older code. Keep the `public` folder intact. Commit the changes.
+2. Open the existing game service in Render. In **Environment**, retain the `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` values you already added. Both are required. The token must permit reads and writes. Use your database URL, not the dashboard page URL.
+3. Choose **Save, rebuild, and deploy**, or deploy the latest GitHub commit. Keep Node 24 and one service instance.
+4. The server connects to Turso and creates all tables automatically. You do not need to upload a SQLite file or manually create tables when starting with an empty database. Existing tables are preserved using `CREATE TABLE IF NOT EXISTS`.
+5. Open `https://YOUR-GAME-HOST/api/status`. The response should include `"persistent":true`, `"storage":"turso"` and `"achievements":100`. No credentials appear in this response.
+6. Refresh the game on every device. Create a username/password account, equip an unlocked title and test an escape. Redeploy/restart the game service and log back in to confirm that saved progress remains. Test Ranked with five separate signed-in profiles.
 
-`render.persistent.yaml` is an optional example for a **new** disk-backed service. For your existing service, make the settings above in its dashboard rather than creating an accidental second service. The normal `render.yaml` intentionally stays free.
+If the deployment fails during storage initialization, check both environment variable names, the copied URL, token read/write permissions and Turso service availability. The server fails startup rather than silently saving accounts to Render's temporary local files. A fully initialized game can continue simulating while an individual ranked result waits for a database retry; result messages are sent after the save succeeds. Results that cannot reach the database before the game process is terminated cannot be guaranteed recoverable.
 
-Render documents free-service storage limitations at https://render.com/docs/free and disk setup at https://render.com/docs/disks. Setting the flag alone does not make a disk persistent. Never use a free service's temporary filesystem for permanent records. There is no absolute forever guarantee: keep backups, retain the disk and continue operating the service.
+No `CU_PERSISTENT_STORAGE` flag or `CU_DATA_FILE` path is needed in Turso mode. Do not point `CU_DATA_FILE` at a Turso URL. The program automatically uses cloud storage when both Turso variables are present. If only one is present, startup reports a configuration error. Clear obsolete local-disk variables if you are no longer using that option.
 
-## Backups and other hosting
+## Existing saved data
 
-The SQLite database contains profiles, salted password hashes, hashed session/recovery credentials, submissions, achievements and seasonal rankings. Back it up regularly using SQLite's online backup facilities (or stop the service before copying the database). Do not copy only the main file while it is actively writing in WAL mode. Keep backups private and test restoring one. Never commit the data directory to GitHub.
+Creating an empty Turso database starts a new database; it does **not** automatically copy records from an older local SQLite file. If you have existing accounts/records to preserve, obtain a consistent backup of that file and migrate/import it before directing players to the new database. Turso's import option is intended for that situation. Keep the original backup until accounts and scores have been verified. This code package contains no player database or credentials.
 
-Docker Compose uses a named volume for `/app/data`. Preserve that volume across rebuilds, and do not remove it with `docker compose down -v`. A local `npm start` stores records in `data/cu-escape.sqlite`; preserve that directory or configure `CU_DATA_FILE` on a persistent volume. Run only one Node service instance with this SQLite setup. Active games are memory-resident and end when the server restarts, even though recorded progress survives.
+## Free-plan limits and backups
 
-## Player identity and records
+Turso is an external service with its own plan limits and availability. Monitor usage in its dashboard and keep independent private backups of important records. Do not delete the database when updating game code. The game does not enable paid overages or change any hosting plan. Game rooms and matchmaking remain in the Node server's memory, so use one service instance; deploying still ends active matches even though completed saved records remain in Turso.
 
-Players now choose **Sign Up** or **Log In** when opening the game. Accounts use a unique username and password; the account links to the same profile ID that owns achievements, selected title, ranked credits and submissions. Usernames are case-insensitive. Passwords use random 16-byte salts and async scrypt (N=32768, r=8, p=3); comparison uses timingSafeEqual. The browser stores a random thirty-day session token, never the password. Sessions are stored as hashes and are revoked on that device's logout. HTTPS/WSS is required for public hosting. Authentication attempts are rate limited. Node crypto reference: https://nodejs.org/api/crypto.html#cryptoscryptpassword-salt-keylen-options-callback
+## Accounts, achievements and privacy
 
-The SQLite schema upgrades automatically without deleting existing profiles. Existing recovery-code profiles can register a username/password while retaining their profile ID and stored progress. Keep old recovery codes private; they remain valid for legacy profile access. No email-based password reset is provided in this release. Losing a password can prevent login on a new device.
+Passwords use salted async scrypt. The browser saves a random thirty-day session token instead of the password. Logging out revokes that device session. Accounts and progression follow the profile ID, so signing in on another device restores the same progress. There is no email-based password reset in this release; keep your password safely. Older recovery-code profiles can attach a username/password if their records were preserved.
 
-Without persistent server storage, Sign Up / Log In and ranked remain unavailable on Render rather than creating accounts that could silently disappear on deployment. The menu still allows casual play without a saved account, with achievements on that browser. Guest/browser progress is stored locally, and signing up can link casual achievements to the server profile. Casual achievements are community reported by the client, as casual runs already are; importing them never grants ranked credits, ranked titles or Front Runner. Profile-specific browser caches are separated when switching accounts. Clearing browser data removes guest-only progress; saved accounts can be restored by logging in.
+There are 100 achievements, including ten secret challenges. Secret names, goals and titles are withheld from the public browser catalog and from unearned profile responses. Qualifying signed-in progress reveals them. Casual statistics and achievements are community reported by the game client, as casual run submissions already are. They are not comprehensive anti-cheat verification. Ranked credits, ranked finish/win milestones and rank achievements are awarded by the authoritative server; importing casual progress never grants them.
 
-Casual boards are opt-in, community-submitted records from solo clients or the multiplayer host, with basic session checks. They are not cheat-proof competitive verification. Spectator-assisted rounds cannot submit. Ranked simulation, private keys, movement limits, actions and credit awards run on the server; clients cannot submit their own ranked result. This is a foundation for competitive play, not a comprehensive anti-cheat system.
+Daily boards use `America/New_York` dates. Ranked seasons change at midnight on the 15th there; matches belong to the season they started. All-time casual records do not automatically reset. Keep the database and backups to retain them.
 
-Daily boards filter by the current date in `America/New_York`; older runs remain stored for all-time boards. Ranked season boundaries are midnight on the 15th in that timezone. A match is credited to the season it started in. A new season starts everyone at Wood with zero credits, while unlocked cosmetic titles remain. Keep the server clock accurate.
+## Optional local SQLite mode
+
+Without Turso variables, local development still uses `data/cu-escape.sqlite`, or the path in `CU_DATA_FILE`. Keep that directory to retain local records. SQLite storage on Render requires a persistent disk and `CU_PERSISTENT_STORAGE=1`; its free temporary filesystem is not permanent account storage. `render.persistent.yaml` remains an optional disk-backed example. Docker Compose retains local SQLite files in the named `game_data` volume; do not delete that volume if it contains records.
+
+## References
+
+- Turso SQL over HTTP: https://docs.turso.tech/sdk/http/reference
+- Turso import: https://docs.turso.tech/cloud/migrate-to-turso
+- Render environment settings: https://render.com/docs/configure-environment-variables

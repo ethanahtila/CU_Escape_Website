@@ -1,10 +1,16 @@
-# CU Escape Website — release 1.3.8
+# CU Escape Website — release 1.4.2
 
 This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
 
-## Current update: 1.3.8
+## Current update: 1.4.2
 
-Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 31.
+Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 32.
+
+### Turso and 100 achievements
+
+This update adds server-side Turso/libSQL storage using `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`. The existing free Render game service can keep running while accounts and progression are saved externally. The server automatically initializes tables and enables saved profiles/ranked when the connection is ready. See **PERSISTENCE.md** for the deployment steps; no SQLite upload is needed for an empty database. The cloud backend uses asynchronous parameterized SQL, serializes account/credit transactions and retries failed ranked result saves without awarding the same match twice. Multiplayer simulation does not wait for database operations.
+
+The Achievements & Titles tab now lists **100 achievements**, including **10 secret challenges**. Goals cover repeated escapes, both buildings/modes/difficulties, solo and team challenges, speed, clean escapes, collected items, locks, vents, lockers, jumping, crouching, stairs, elevators, rescues, ranked finishes/wins and rank milestones. Secret goals are deliberately very demanding, combining normal gameplay constraints; their names, requirements and titles stay hidden in the browser until earned. The private catalog stays on the server. Casual actions are counted per player, shared in snapshots and retained through host handoff; guest progress stays on that browser, while signed-in progress syncs to the profile. Counters for career goals continue across devices using the saved profile. Existing achievement IDs and title unlocks are retained.
 
 ### My Rank
 
@@ -16,7 +22,7 @@ The opening screen offers **Sign Up** and **Log In**. Choose a unique username (
 
 **Achievements & Titles** is a visible menu tab on both editions. Its Achievements tab lists every goal with Completed / Not completed status. Its Titles tab shows all achievement and ranked titles, disables locked choices, and equips one beside your name. Casual achievements can also be earned and retained on the current browser without a server account; signed-in casual unlocks sync to the server. Browser-only guest progress can be linked when signing up. Ranked titles require their profile unlocks, and Front Runner is awarded by the server for a ranked win.
 
-Accounts, saved rankings and global leaderboards require persistent server storage. A login/password does not make temporary hosting storage permanent. On Render, configure the disk and environment settings in **PERSISTENCE.md** before signups are enabled. **Continue without a saved account** preserves casual play and browser-only achievements while storage is unavailable. Ranked matchmaking asks players to log in. No hosting settings or live site have been changed by this chat.
+Accounts, saved rankings and global leaderboards require persistent server storage. A login/password does not make temporary hosting storage permanent. On Render, configure Turso or a persistent disk as described in **PERSISTENCE.md** before signups are enabled. **Continue without a saved account** preserves casual play and browser-only achievements while storage is unavailable. Ranked matchmaking asks players to log in. No hosting settings or live site have been changed by this chat.
 
 ### Ranked, records and furniture evasion
 
@@ -30,7 +36,7 @@ Ranks follow Wood, Bronze, Silver, Gold, Diamond, Mythic, Legendary, Masters, Pl
 
 **Achievements & Titles** shows achievement progress and equipped titles; **Account** provides login/logout. Legacy recovery-code profiles remain under **Profile / recovery**. Rank and achievement titles can be selected beside your name. Speed Demon requires an Extreme escape in at most five minutes. Other titles reward first escape, clean escape, Puzzle Mode, team play, ten escapes and a ranked win. New profiles use a chosen username and password; legacy recovery codes can be linked to a new login. Titles remain unlocked across seasons.
 
-**Persistent hosting setup is required** for saved records and ranked on Render. The existing free configuration remains unchanged. Read **PERSISTENCE.md** before enabling those features; it includes settings, backups and an optional disk-backed deployment example. This package does not purchase hosting or deploy itself.
+**Persistent hosting setup is required** for saved records and ranked on Render. The existing free hosting configuration remains unchanged. Read **PERSISTENCE.md** before enabling those features; it includes Turso settings, backups and an optional local-disk deployment example. This package does not purchase hosting or deploy itself.
 
 Standing on solid furniture now sends hunting entities to your last grounded position for up to six seconds. Leaving the object restores real tracking immediately. After six seconds, a nearby entity can pull you down. Ordinary jumps do not gain this decoy. Easy, Normal, Hard and Extreme each have a slight increase to entity speed, sight and search persistence; the existing gentle multiplayer scaling remains.
 
@@ -190,3 +196,5 @@ Release 1.3.6 verification: all 72 automated tests passed. Ranked now ignores ro
 Release 1.3.7 verification: all 77 automated tests passed, with final focused account/title checks also passing. New coverage includes signup/login forms on both device editions, case-insensitive username uniqueness, salted password storage, incorrect credentials, session logout, account migration, achievements/title/ranked-credit retention after closing and reopening the server database, shared account access from another device, guest achievement persistence, unlocked/locked title choices, visible menu tabs and multiplayer title broadcasting. No public deployment or hardware iPhone test was performed.
 
 Release 1.3.8 verification: all 79 automated tests passed. Rank progress tests check all ranks and levels at 0/75/149 credits within a level, exact promotion boundaries, Pro level 5 maximum, fresh menu data, menu/result progress panels on desktop/mobile, and saved account/ranked integration. The update has not been publicly deployed by this chat.
+
+Release 1.4.2 verification: all 86 automated tests passed, plus final focused persistence/transaction checks. Turso tests use a local implementation of the documented SQL-over-HTTP protocol backed by SQLite; they cover automatic schema creation, account/title/rank/leaderboard retention after replacing the game server, concurrent credit writes, idempotent match awards, connection failure, asynchronous ranked saving and retries while simulation continues. Catalog tests cover exactly 100 unique goals, ten redacted secrets, satisfiable rule combinations, locked/earned secret-title disclosure, real pickup/drop/vent/jump/crouch counters and snapshot/host-handoff continuity. This is automated local verification, not a live connection test against your private Turso database, nor a hardware iPhone playtest. No public deployment was performed by this chat.

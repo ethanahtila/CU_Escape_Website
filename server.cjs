@@ -4,12 +4,16 @@ const https = require('node:https');
 const fs = require('node:fs');
 const path = require('node:path');
 const { WebSocketServer, WebSocket } = require('ws');
+const {createRemoteProgression}=require('./progression-remote.cjs');
 const {createProgression,ACHIEVEMENTS}=require('./progression.cjs'),{createProgressionHttp}=require('./progression-http.cjs'),{createRanked}=require('./ranked.cjs');
 
 function createGameServer(options = {}) {
   const rooms = new Map();
-  const progression=createProgression({filename:options.dataFile||process.env.CU_DATA_FILE,now:options.now});
-  const persistent=options.dataFile!=null||process.env.CU_PERSISTENT_STORAGE==='1'||!process.env.RENDER;
+  const tursoUrl=options.dataFile!==undefined?'':options.tursoUrl||process.env.TURSO_DATABASE_URL||'',tursoToken=options.dataFile!==undefined?'':options.tursoToken||process.env.TURSO_AUTH_TOKEN||'';
+  if(!!tursoUrl!==!!tursoToken)throw Error('Set both TURSO_DATABASE_URL and TURSO_AUTH_TOKEN.');
+  const progression=tursoUrl?createRemoteProgression({url:tursoUrl,token:tursoToken,fetch:options.tursoFetch,now:options.now}):createProgression({filename:options.dataFile||process.env.CU_DATA_FILE,now:options.now});
+  const persistent=!!tursoUrl||options.dataFile!=null||process.env.CU_PERSISTENT_STORAGE==='1'||!process.env.RENDER;
+  let storageReady=!tursoUrl;const ready=(progression.ready||Promise.resolve()).then(()=>{storageReady=true;});ready.catch(()=>{});
   let progressionHttp,ranked;
   const maxPlayers = options.maxPlayers || 16;
   const maxClients = options.maxClients || 256;
@@ -31,7 +35,9 @@ function createGameServer(options = {}) {
     '/mobile': ['mobile.html', 'text/html; charset=utf-8'],
     '/favicon.svg': ['favicon.svg', 'image/svg+xml'],
     '/robots.txt': ['robots.txt', 'text/plain; charset=utf-8'],
-    '/progression.js':['progression.js','application/javascript; charset=utf-8']
+    '/progression.js':['progression.js','application/javascript; charset=utf-8'],
+    '/achievement-catalog.js':['achievement-catalog.js','application/javascript; charset=utf-8'],
+    '/achievement-rules.js':['achievement-rules.js','application/javascript; charset=utf-8']
   };
   const certPath=options.certPath||process.env.TLS_CERT_PATH,keyPath=options.keyPath||process.env.TLS_KEY_PATH;
   if(!!certPath!==!!keyPath)throw Error('Set both TLS_CERT_PATH and TLS_KEY_PATH.');
@@ -40,6 +46,7 @@ function createGameServer(options = {}) {
     let pathname;
     try { pathname = new URL(req.url, 'http://localhost').pathname; }
     catch { res.writeHead(400, headers); return res.end('Bad request'); }
+    if((pathname.startsWith('/api/')||pathname==='/healthz')&&!storageReady){res.writeHead(503,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({error:'Storage is initializing or unavailable.'}));return;}
     if(pathname.startsWith('/api/')&&await progressionHttp.handle(req,res,new URL(req.url,'http://localhost')))return;
     if (!['GET', 'HEAD'].includes(req.method)) {
       res.writeHead(405, { ...headers, Allow: 'GET, HEAD' }); return res.end();
@@ -89,8 +96,8 @@ function createGameServer(options = {}) {
       wss.emit('connection', ws, name, displayName,{ranked:url.pathname==='/ranked',token:url.searchParams.get('token')||url.searchParams.get('profile')||'',title:url.searchParams.get('title')});
     });
   });
-  wss.on('connection', (ws, name, displayName, meta={}) => {
-    ws.authToken=meta.token;ws.profile=progression.profile(meta.token);ws.equippedTitle=meta.title==null?progression.titleName(ws.profile?.title):ACHIEVEMENTS.some(a=>a.id===meta.title&&a.id!=='first')||ws.profile?.titles.includes(meta.title)?progression.titleName(meta.title):'';
+  wss.on('connection', async(ws, name, displayName, meta={}) => {ws.on('error',()=>{});try{await ready;
+    ws.authToken=meta.token;ws.profile=await progression.profile(meta.token);if(ws.readyState!==WebSocket.OPEN)return;ws.equippedTitle=meta.title==null?progression.titleName(ws.profile?.title):ACHIEVEMENTS.some(a=>a.id===meta.title&&!a.serverOnly&&!a.secret)||ws.profile?.titles.includes(meta.title)?progression.titleName(meta.title):'';
     if(meta.ranked){if(!persistent||!ws.profile){error(ws,'profile_required',persistent?'Create or recover your profile before ranked.':'Ranked requires persistent storage. See PERSISTENCE.md.');ws.close(1008);return;}if(clientCount()+ranked.sockets.size>=maxClients){ws.close(1013);return;}ranked.enqueue(ws,ws.profile);return;}
     if (!/^[A-Za-z0-9_-]{1,32}$/.test(name)) {
       error(ws, 'invalid_game_id', 'Use a room name with 1–32 letters, numbers, underscores or hyphens.'); ws.close(1008); return;
@@ -108,7 +115,7 @@ function createGameServer(options = {}) {
     broadcast(room, { type: 'player_joined', playerId: id, name:ws.playerName,title:ws.equippedTitle||'' }, ws);
     ws.on('pong', () => { ws.alive = true; });
     ws.on('error', () => {});
-    ws.on('message', (bytes, binary) => {
+    ws.on('message', async(bytes, binary) => {try{
       const now = Date.now(); tokens = Math.min(120, tokens + (now - lastRefill) * .12); lastRefill = now;
       if (tokens < 1) { error(ws, 'rate_limited', 'Too many messages.'); ws.close(1008); return; }
       tokens -= 1;
@@ -118,15 +125,16 @@ function createGameServer(options = {}) {
       if (!message || typeof message !== 'object' || Array.isArray(message)) { error(ws, 'invalid_message', 'Invalid game message.'); return; }
       if (!['ens_state', 'ens_input', 'ens_action', 'ens_sync', 'ens_room', 'ens_view', 'ens_profile'].includes(message.type)) { error(ws, 'invalid_message', 'Unsupported game message.'); return; }
       if(message.type==='ens_state'&&(message.mapId==='ranked'||message.ranked)){error(ws,'matchmaking_only','Ranked is only available through the shared matchmaking queue.');return;}
-      if(message.type==='ens_profile'){ws.profile=progression.profile(meta.token);const title=message.titleId;if(typeof title==='string'){if(title===''||ws.profile?.titles.includes(title)||message.localAchievement===true&&ACHIEVEMENTS.some(a=>a.id===title&&a.id!=='first'))ws.equippedTitle=progression.titleName(title);}else if(ws.profile)ws.equippedTitle=progression.titleName(ws.profile.title);broadcast(room,{type:'profile_changed',playerId:id,title:ws.equippedTitle||''});return;}
+      if(message.type==='ens_profile'){ws.profile=await progression.profile(meta.token);if(ws.readyState!==WebSocket.OPEN)return;const title=message.titleId;if(typeof title==='string'){if(title===''||ws.profile?.titles.includes(title)||message.localAchievement===true&&ACHIEVEMENTS.some(a=>a.id===title&&!a.serverOnly&&!a.secret))ws.equippedTitle=progression.titleName(title);}else if(ws.profile)ws.equippedTitle=progression.titleName(ws.profile.title);broadcast(room,{type:'profile_changed',playerId:id,title:ws.equippedTitle||''});return;}
       if(message.type==='ens_room'){if(id!==room.host){error(ws,'host_only','Only the host can rename the room.');return;}if(room.phase!=='lobby'){error(ws,'round_active','Return the group to the lobby before renaming.');return;}const next=message.room;if(typeof next!=='string'||!/^[A-Za-z0-9_-]{1,32}$/.test(next)){error(ws,'invalid_game_id','Invalid room name.');return;}if(next===room.name)return;if(rooms.has(next)){error(ws,'room_exists','That room name is already in use. Choose another name.');return;}rooms.delete(room.name);room.name=next;rooms.set(next,room);broadcast(room,{type:'room_renamed',room:next});return;}
       if (message.type === 'ens_state' && (id !== room.host || message.host !== id)) { error(ws, 'host_only', 'Only the current host may publish game state.'); return; }
       if (message.type === 'ens_action' && !['start', 'restart', 'lobby', 'use', 'locker', 'elevator_button', 'drop_key', 'reenter', 'spectate', 'spec_release', 'spec_fly', 'spec_follow', 'spec_siren', 'spec_boost', 'spec_use'].includes(message.action)) { error(ws, 'invalid_message', 'Unsupported action.'); return; }
       if (message.type === 'ens_action' && ['start', 'restart', 'lobby'].includes(message.action) && id !== room.host) { error(ws, 'host_only', 'Only the host may start or restart the round.'); return; }
       if(message.type==='ens_view'){if(message.round!==room.round||!Number.isInteger(message.seq)||!message.camera||bytes.length>2048)return;for(const [peerId,peer]of room.players)if(peerId!==id&&room.roles.has(peerId))send(peer,{...message,playerId:id});return;}
       const verified = { ...message, playerId: id };
-      if (message.type === 'ens_state') {progressionHttp.observe(room,message);room.phase=message.phase;room.round=message.round;if(Array.isArray(message.players))room.roles=new Set(message.players.filter(a=>Array.isArray(a)&&a[30]?.spectator).map(a=>a[0]));broadcast(room, verified, ws);}
+      if (message.type === 'ens_state') {progressionHttp.observe(room,message).catch(()=>console.warn('A completed casual run could not be saved.'));room.phase=message.phase;room.round=message.round;if(Array.isArray(message.players))room.roles=new Set(message.players.filter(a=>Array.isArray(a)&&a[30]?.spectator).map(a=>a[0]));broadcast(room, verified, ws);}
       else if (room.host !== id) send(room.players.get(room.host), verified);
+    }catch{error(ws,'storage_unavailable','Saved profiles are temporarily unavailable. Please try again.');}
     });
     ws.on('close', () => {
       if (room.players.get(id) !== ws) return;
@@ -135,6 +143,7 @@ function createGameServer(options = {}) {
       room.host = Math.min(...room.players.keys());
       broadcast(room, { type: 'player_left', playerId: id });
     });
+  }catch{error(ws,'storage_unavailable','Unable to load your saved profile. Check the database connection.');ws.close(1011);}
   });
   const heartbeat = setInterval(() => {
     for (const ws of wss.clients) {
@@ -144,18 +153,18 @@ function createGameServer(options = {}) {
   }, options.heartbeatMs || 15000);
   heartbeat.unref();
   async function close() {
-    shuttingDown = true; clearInterval(heartbeat);ranked.close();
+    shuttingDown = true; clearInterval(heartbeat);await ranked.close();
     for (const ws of wss.clients) ws.terminate();
     await new Promise(resolve => wss.close(resolve));
-    if (server.listening) await new Promise(resolve => server.close(resolve));progression.close();
+    if (server.listening) await new Promise(resolve => server.close(resolve));await progression.close();
   }
-  return { server, rooms, wss, close,progression,ranked,persistent };
+  return { server, rooms, wss, close,progression,ranked,persistent,ready };
 }
 module.exports = { createGameServer };
 if (require.main === module) {
   const app = createGameServer();
   const port = Number(process.env.PORT || 3000);
-  app.server.listen(port, process.env.HOST || '0.0.0.0', () => console.log(`CU Escape is listening on port ${port}.`));
+  app.ready.then(()=>app.server.listen(port, process.env.HOST || '0.0.0.0', () => console.log(`CU Escape is listening on port ${port}.`))).catch(()=>{console.error('Storage initialization failed. Check TURSO_DATABASE_URL and TURSO_AUTH_TOKEN in the server environment.');process.exitCode=1;app.close();});
   let stopping = false;
   const stop = async () => { if (stopping) return; stopping = true; await app.close(); };
   process.on('SIGTERM', stop); process.on('SIGINT', stop);
