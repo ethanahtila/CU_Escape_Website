@@ -2,7 +2,7 @@
 
 The project is configured for a Node.js 24 web service and a same-origin secure WebSocket relay. The game is not publicly live until it is deployed to a hosting account.
 
-For version 1.3.7 profiles, ranked and leaderboards, read **PERSISTENCE.md**. The existing free configuration still supports casual multiplayer, but permanent progression requires a persistent disk and the documented environment settings.
+For version 1.3.8 profiles, ranked and leaderboards, read **PERSISTENCE.md**. The existing free configuration still supports casual multiplayer, but permanent progression requires a persistent disk and the documented environment settings.
 
 ## Render deployment (no custom domain required)
 

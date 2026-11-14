@@ -5,7 +5,10 @@ const ACHIEVEMENTS=[{id:'escape',name:'Escape Artist',description:'Complete your
 const zoned=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'});
 function dayKey(now=Date.now()){const p=Object.fromEntries(zoned.formatToParts(new Date(now)).map(x=>[x.type,x.value]));return `${p.year}-${p.month}-${p.day}`;}
 function seasonKey(now=Date.now()){let [y,m,d]=dayKey(now).split('-').map(Number);if(d<15){m--;if(m===0){m=12;y--;}}return `${y}-${String(m).padStart(2,'0')}-15`;}
-function rankInfo(credits=0){const index=Math.min(9,Math.max(0,Math.floor(credits/750)));return {index,name:RANKS[index],stage:Math.min(5,Math.floor(Math.max(0,credits-index*750)/150)+1),credits,next:Math.max(0,Math.min((index+1)*750,(index*750+(Math.floor((credits-index*750)/150)+1)*150))-credits)};}
+function rankInfo(credits=0){
+ credits=Math.max(0,Math.floor(Number(credits)||0));const index=Math.min(9,Math.floor(credits/750)),stage=Math.min(5,Math.floor((credits-index*750)/150)+1),maxLevel=index===9&&stage===5,levelCredits=maxLevel?150:credits-(index*750+(stage-1)*150);
+ return {index,name:RANKS[index],stage,credits,levelCredits,maxLevel,next:maxLevel?0:150-levelCredits,nextRank:maxLevel?null:RANKS[stage===5?index+1:index],nextStage:maxLevel?null:stage===5?1:stage+1};
+}
 function deadlineSeconds(index){return index<5?null:Math.round((11-(index-5))*60);}
 function creditDelta(place,index,random=(lo,hi)=>crypto.randomInt(lo,hi+1)){const ranges=[[50,75],[20,45],[5,20],[25,45]],range=ranges[place===5?3:place-1];if(!range)throw Error('Invalid placement');const base=random(...range),adjust=Math.max(0,index-3)*.025;return place<=2?Math.max(1,Math.round(base*(1-adjust))):-Math.round(base*(1+adjust));}
 const clean=s=>Array.from(String(s||'').replace(/[\u0000-\u001f\u007f<>]/g,'').replace(/\s+/g,' ').trim()).slice(0,20).join('')||'Student';

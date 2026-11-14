@@ -1,10 +1,14 @@
-# CU Escape Website — release 1.3.7
+# CU Escape Website — release 1.3.8
 
 This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
 
-## Current update: 1.3.7
+## Current update: 1.3.8
 
-Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 30.
+Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 31.
+
+### My Rank
+
+The menu's **My Rank** button fetches your saved rank and shows the current level (1–5), total ranked credits, a progress bar and credits still needed for the next **level**. For example, Wood level 2 with 175 total credits shows 25 / 150 toward Wood level 3, with 125 credits remaining. Wood level 5 at 749 credits shows one credit to Bronze level 1. At Pro level 5, it shows that the highest level is reached; additional credits still count toward leaderboard standing. The same panel appears with match results and is available from Account. Opening it refreshes the saved profile, including season resets. If a refresh fails, any cached rank is clearly labeled as the last loaded value; players without a loaded profile get a login button.
 
 ### Accounts, achievements and titles
 
@@ -184,3 +188,5 @@ Release 1.3.5 verification: 69 automated tests passed across the full regression
 Release 1.3.6 verification: all 72 automated tests passed. Ranked now ignores room codes, uses one shared queue, randomly selects four opponents, and starts a five-player match with one fixed mode/difficulty. New tests check hidden/disabled room controls and restored casual sharing on desktop/mobile, different or invalid room names not affecting real ranked connections, rejection of ranked state on the named casual relay, queue cancellation, cross-rank random opponent draws, and private keys/results for five students. Final focused checks also cover normal room links and fifth-place credit handling. Upload all extracted files to the existing repository and refresh all clients after deployment. This chat has not deployed the package.
 
 Release 1.3.7 verification: all 77 automated tests passed, with final focused account/title checks also passing. New coverage includes signup/login forms on both device editions, case-insensitive username uniqueness, salted password storage, incorrect credentials, session logout, account migration, achievements/title/ranked-credit retention after closing and reopening the server database, shared account access from another device, guest achievement persistence, unlocked/locked title choices, visible menu tabs and multiplayer title broadcasting. No public deployment or hardware iPhone test was performed.
+
+Release 1.3.8 verification: all 79 automated tests passed. Rank progress tests check all ranks and levels at 0/75/149 credits within a level, exact promotion boundaries, Pro level 5 maximum, fresh menu data, menu/result progress panels on desktop/mobile, and saved account/ranked integration. The update has not been publicly deployed by this chat.

@@ -1,6 +1,6 @@
 # Persistent rankings and profiles
 
-Version 1.3.7 includes the database and APIs, but this chat has not changed or deployed your Render service. Your existing free web-service configuration remains in `render.yaml`. Casual multiplayer continues to work there. On Render, profiles, leaderboards and ranked are disabled until persistent storage is explicitly configured, so temporary data is not presented as permanent progress.
+Version 1.3.8 includes the database and APIs, but this chat has not changed or deployed your Render service. Your existing free web-service configuration remains in `render.yaml`. Casual multiplayer continues to work there. On Render, profiles, leaderboards and ranked are disabled until persistent storage is explicitly configured, so temporary data is not presented as permanent progress.
 
 ## Existing Render service
 

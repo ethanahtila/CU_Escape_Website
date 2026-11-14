@@ -17,3 +17,8 @@ test('rank rewards, stages, protected rank floors, deadlines and season reset',(
  for(let n=0;n<10;n++)s.reward(a.profile.id,'win'+n,1,0,undefined,()=>75);assert.equal(s.profile(a.token).rank.name,'Bronze');const lost=s.reward(a.profile.id,'loss',4,1,undefined,()=>45);assert.equal(lost.credits,750);assert.equal(lost.delta,0);assert.equal(s.reward(a.profile.id,'loss',1,1).credits,750);assert.equal(s.rankedBoard(a.token).personalBest.placement,1);
  time=Date.parse('2026-11-15T05:00:00Z');assert.equal(s.profile(a.token).rank.credits,0);assert.equal(s.rankedBoard(a.token).total,0);assert(s.profile(a.token).titles.includes('rank:1'));s.close();
 });
+
+test('rank progress targets the next level, switches rank at level five, and caps at Pro five',()=>{
+ for(let index=0;index<10;index++)for(let stage=1;stage<=5;stage++)for(const extra of [0,75,149]){const r=rankInfo(index*750+(stage-1)*150+extra);assert.equal(r.stage,stage);assert.equal(r.index,index);const max=index===9&&stage===5;assert.equal(r.maxLevel,max);assert.equal(r.levelCredits,max?150:extra);assert.equal(r.next,max?0:150-extra);assert.equal(r.nextStage,max?null:stage===5?1:stage+1);assert.equal(r.nextRank,max?null:rankInfo((index+(stage===5?1:0))*750).name);}
+ assert.equal(rankInfo(750).nextStage,2);assert.equal(rankInfo(750).levelCredits,0);assert.equal(rankInfo(10000).next,0);assert.equal(rankInfo(10000).nextRank,null);
+});
