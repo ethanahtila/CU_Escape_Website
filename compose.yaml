@@ -4,6 +4,9 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
+      CU_DATA_FILE: /app/data/cu-escape.sqlite
+    volumes:
+      - game_data:/app/data
     expose:
       - "3000"
   https:
@@ -22,5 +25,6 @@ services:
     depends_on:
       - game
 volumes:
+  game_data:
   caddy_data:
   caddy_config:

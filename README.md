@@ -1,10 +1,26 @@
-# CU Escape Website — release 1.3.4
+# CU Escape Website — release 1.3.5
 
 This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
 
-## Current update: 1.3.4
+## Current update: 1.3.5
 
-Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 27.
+Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 28.
+
+### Ranked, records and furniture evasion
+
+Choose **Ranked** beside ENS and SBCC in the map list. It exposes only **Ranked Key Mode / Hard**. Four total players join the global queue; the server selects ENS or SBCC, then starts a three-second countdown. Normal room-name multiplayer stays available on ENS/SBCC.
+
+Ranked uses four private keys and four personal locks per student. Only your keys appear on your screen. F collects/uses keys and opens your exit after your locks are removed. H (HIT on touch) hits a nearby visible rival with a 1.25-second cooldown: one carried key returns to a random valid room on a random floor. Capture drops carried keys and places you in jail for five seconds before an entrance respawn with five seconds of immunity, so a competitive race cannot deadlock waiting for a rival to rescue you. Ranked disables spectators. Opening an exit starts the entity finale globally, but each rival must still unlock their own exit. Placement follows the order students cross the exit; exact same-tick ties use crossing fraction then player ID. Leaving or timing out counts as a loss using the last-place penalty.
+
+Ranks follow Wood, Bronze, Silver, Gold, Diamond, Mythic, Legendary, Masters, Platinum, Pro. Five stages per rank cost 150 credits each. Base rewards: first +50–75, second +20–45, third −5–20, fourth −25–45. Diamond through Pro reduce gains and increase losses in small 2.5 percentage-point steps per rank. Once a rank is reached that season, losses cannot fall below its first stage. Mythic has an eleven-minute deadline, then Legendary ten, Masters nine, Platinum eight, Pro seven. Matchmaking initially groups within 750 credits and expands by 750 every twenty seconds. The current server caps concurrent ranked matches at four; additional players wait.
+
+**Leaderboards** includes 32 casual categories: two maps × two modes × four difficulties × daily/all-time. Each shows the fastest 50 runs and your placement even beyond 50. A win prompts whether to publish. Casual results are community submitted; spectator-assisted runs are excluded. There is exactly one ranked leaderboard, sorted by season credits across both maps. Daily boards change at midnight Cedarville time; ranked seasons restart on the 15th at midnight there. All-time casual results never automatically reset.
+
+**Profile / titles** shows achievements, equipped titles and a private recovery code. Rank and achievement titles can be selected beside your name. Speed Demon requires an Extreme escape in at most five minutes. Other titles reward first escape, clean escape, Puzzle Mode, team play, ten escapes and a ranked win. Profiles are browser credential based; save your recovery code privately to move progress to another device. Titles remain unlocked across seasons.
+
+**Persistent hosting setup is required** for saved records and ranked on Render. The existing free configuration remains unchanged. Read **PERSISTENCE.md** before enabling those features; it includes settings, backups and an optional disk-backed deployment example. This package does not purchase hosting or deploy itself.
+
+Standing on solid furniture now sends hunting entities to your last grounded position for up to six seconds. Leaving the object restores real tracking immediately. After six seconds, a nearby entity can pull you down. Ordinary jumps do not gain this decoy. Easy, Normal, Hard and Extreme each have a slight increase to entity speed, sight and search persistence; the existing gentle multiplayer scaling remains.
 
 ### Owner controls: spectator mode
 
@@ -154,3 +170,5 @@ Release 1.3.2 verification: all 44 automated tests passed. New real-relay checks
 Release 1.3.3 verification: all 49 automated tests passed. Crouch tests cover 1/5/9.5/10/12/15-second sessions, exact tiered cooldowns, reduced speed/camera height, stairs/jump restrictions, automatic exhaustion, awareness-based detection, prediction/partial acknowledgments, snapshots and host handoff. Real-relay joining tests start with deliberately mismatched settings, verify room-name-only joining inherits the host settings, and verify late joins enter the running round. Native canvas standing/crouching views were inspected. No spectator implementation is included.
 
 Release 1.3.4 verification: all 61 automated tests passed. New tests cover Alt+P role entry, invisible ghost bodies/map arrows, Students-list naming, item/discovery/win-loss isolation, bounded flight, mobile flight controls, live camera/map following, radius-only map visibility, exclusive possession, manual captures, furniture collision, controlled elevator travel, existing/renewed ability recharge, global two-second Q siren timing and twenty-second cooldown, host handoff and controller disconnect. A real relay test delivers direct view packets to the observer while the ordinary host receives none, switches map state immediately, and preserves possession through host transfer. Native canvas entity-camera and radius-map renders were inspected. These are local checks; deployment and a live device/network playtest are still needed.
+
+Release 1.3.5 verification: 69 automated tests passed across the full regression suite and final focused checks. Tests cover the Ranked map tile on desktop/mobile, fixed mode/difficulty, returning to normal map selections, six-second furniture decoys and capture expiry, 32 board categories, opt-in ownership, top-50 limits and personal placements, SQLite reopen persistence, Cedarville/DST/season boundaries, rewards and rank floors, title unlocks, API/profile/browser UI integration, four-player queue/countdown/private keys/hits/personal exits, and four complete desktop/mobile clients moving through real ranked WebSockets. Existing gameplay, spectator, lobby, audio and collision checks remain included. These are local automated checks; no public deployment or real iPhone/campus-network playtest was performed in this update.

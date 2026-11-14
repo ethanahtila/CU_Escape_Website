@@ -6,7 +6,7 @@ const WebSocket = require('ws');
 const { createGameServer } = require('../server.cjs');
 
 async function fixture(t) {
-  const app = createGameServer(); app.server.listen(0, '127.0.0.1'); await once(app.server, 'listening');
+  const app = createGameServer({dataFile:':memory:'}); app.server.listen(0, '127.0.0.1'); await once(app.server, 'listening');
   const origin = `http://127.0.0.1:${app.server.address().port}`, clients = [];
   t.after(() => app.close());
   async function peer(room, customOrigin = origin) {

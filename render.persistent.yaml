@@ -1,0 +1,21 @@
+# Optional paid, disk-backed example. See PERSISTENCE.md for an existing service.
+services:
+  - type: web
+    name: cu-escape
+    runtime: node
+    plan: starter
+    numInstances: 1
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /healthz
+    disk:
+      name: cu-escape-records
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: CU_DATA_FILE
+        value: /var/data/cu-escape.sqlite
+      - key: CU_PERSISTENT_STORAGE
+        value: "1"
