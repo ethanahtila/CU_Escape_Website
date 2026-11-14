@@ -1,16 +1,26 @@
-'use strict';const crypto=require('node:crypto');
+'use strict';const crypto=require('node:crypto'),{createAccounts}=require('./accounts.cjs'),{ACHIEVEMENTS}=require('./progression.cjs');
 function createProgressionHttp({store,enabled,send,broadcast}){
- const tickets=new Map(),limits=new Map();
+ const tickets=new Map(),limits=new Map(),authLimits=new Map(),accounts=createAccounts(store);
  const token=req=>String(req.headers.authorization||'').replace(/^Bearer /,'');
  function json(res,status,data){res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));}
  async function body(req){let text='';for await(const chunk of req){text+=chunk;if(text.length>8192)throw Error('Request too large');}return text?JSON.parse(text):{};}
  async function handle(req,res,url){if(!url.pathname.startsWith('/api/'))return false;
   if(url.pathname==='/api/status'){json(res,200,{persistent:enabled,timezone:'America/New_York',leaderboards:32,rankedBoards:1});return true;}
   if(!enabled){json(res,503,{error:'Permanent records and ranked require persistent server storage. See PERSISTENCE.md in the update package.'});return true;}
-  const key=req.socket.remoteAddress||'local',window=Math.floor(Date.now()/60000),rate=limits.get(key);if(!rate||rate.window!==window)limits.set(key,{window,n:1});else if(++rate.n>120){json(res,429,{error:'Please try again shortly.'});return true;}
+  const key=(req.socket.remoteAddress||'local')+':'+crypto.createHash('sha256').update(token(req)).digest('hex'),window=Math.floor(Date.now()/60000),rate=limits.get(key);if(!rate||rate.window!==window)limits.set(key,{window,n:1});else if(++rate.n>120){json(res,429,{error:'Please try again shortly.'});return true;}
   try{const auth=token(req),input=req.method==='POST'?await body(req):{};if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)throw Error('Use this game website to change your profile.');let result;
-   if(url.pathname==='/api/profile'&&req.method==='POST')result=store.account(input.token||auth,input.name);
+   if(url.pathname.startsWith('/api/auth/')){
+    const authKey=key+':'+String(input.username||'').trim().toLowerCase(),at=Date.now(),limit=authLimits.get(authKey);if(authLimits.size>10000)for(const [k,v]of authLimits)if(at-v.at>900000)authLimits.delete(k);
+    if(req.method==='POST'&&['/api/auth/login','/api/auth/signup'].includes(url.pathname)){if(limit&&at-limit.at<900000&&limit.n>=10){json(res,429,{error:'Too many sign-in attempts. Try again in fifteen minutes.'});return true;}authLimits.set(authKey,{at:limit&&at-limit.at<900000?limit.at:at,n:limit&&at-limit.at<900000?limit.n+1:1});}
+    if(url.pathname==='/api/auth/signup'&&req.method==='POST')result=await accounts.signup(input.username,input.password,auth);
+    else if(url.pathname==='/api/auth/login'&&req.method==='POST')result=await accounts.login(input.username,input.password);
+    else if(url.pathname==='/api/auth/session'&&req.method==='GET'){result={profile:store.profile(auth)};if(!result.profile?.username){json(res,401,{error:'Sign in to your saved account.'});return true;}}
+    else if(url.pathname==='/api/auth/logout'&&req.method==='POST'){accounts.logout(auth);result={ok:true};}
+    else throw Error('Unknown account endpoint');
+   }
+   else if(url.pathname==='/api/profile'&&req.method==='POST'){if((input.token||auth)&&!store.profile(input.token||auth))throw Error('Your saved session expired. Log in again.');result=store.account(input.token||auth,input.name);}
    else if(url.pathname==='/api/profile'&&req.method==='GET'){result={profile:store.profile(auth)};if(!result.profile)throw Error('Profile not found.');}
+   else if(url.pathname==='/api/profile/achievements'&&req.method==='POST'){const p=store.profile(auth);if(!p?.username)throw Error('Log in to save achievements.');if(!Array.isArray(input.earned)||input.earned.length>7||!input.earned.every(id=>ACHIEVEMENTS.some(a=>a.id===id&&id!=='first')))throw Error('Invalid casual achievement list');for(const id of input.earned)store.unlock(p.id,id);const wins=Math.max(0,Math.min(1000000,Math.floor(Number(input.wins)||0)));store.db.prepare('INSERT INTO casual_progress VALUES(?,?) ON CONFLICT(profile) DO UPDATE SET wins=max(wins,excluded.wins)').run(p.id,wins);if(wins>=10)store.unlock(p.id,'ten');result={profile:store.profile(auth)};}
    else if(url.pathname==='/api/profile/title'&&req.method==='POST')result={profile:store.setTitle(auth,String(input.title||''))};
    else if(url.pathname==='/api/leaderboards'&&req.method==='GET')result=store.board(Object.fromEntries(url.searchParams),auth);
    else if(url.pathname==='/api/ranked/leaderboard'&&req.method==='GET')result=store.rankedBoard(auth);

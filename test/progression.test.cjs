@@ -13,7 +13,7 @@ test('all 32 boards, opt-in publication, top 50 and personal placement persist a
 });
 test('rank rewards, stages, protected rank floors, deadlines and season reset',()=>{
  let time=Date.parse('2026-11-14T12:00:00Z');const s=createProgression({filename:':memory:',now:()=>time}),a=s.account(null,'Ranked');
- for(let i=0;i<10;i++){assert.equal(rankInfo(i*750).index,i);assert.equal(rankInfo(i*750+600).stage,5);assert.equal(deadlineSeconds(i),i<5?null:(16-i)*60);for(let place=1;place<=4;place++){const lo=creditDelta(place,i,(l,h)=>l),hi=creditDelta(place,i,(l,h)=>h);assert(place<3?lo>0&&hi>=lo:lo<0&&hi<=lo);}}
+ for(let i=0;i<10;i++){assert.equal(rankInfo(i*750).index,i);assert.equal(rankInfo(i*750+600).stage,5);assert.equal(deadlineSeconds(i),i<5?null:(16-i)*60);for(let place=1;place<=5;place++){const lo=creditDelta(place,i,(l,h)=>l),hi=creditDelta(place,i,(l,h)=>h);assert(place<3?lo>0&&hi>=lo:lo<0&&hi<=lo);}}
  for(let n=0;n<10;n++)s.reward(a.profile.id,'win'+n,1,0,undefined,()=>75);assert.equal(s.profile(a.token).rank.name,'Bronze');const lost=s.reward(a.profile.id,'loss',4,1,undefined,()=>45);assert.equal(lost.credits,750);assert.equal(lost.delta,0);assert.equal(s.reward(a.profile.id,'loss',1,1).credits,750);assert.equal(s.rankedBoard(a.token).personalBest.placement,1);
  time=Date.parse('2026-11-15T05:00:00Z');assert.equal(s.profile(a.token).rank.credits,0);assert.equal(s.rankedBoard(a.token).total,0);assert(s.profile(a.token).titles.includes('rank:1'));s.close();
 });
