@@ -1,15 +1,15 @@
-# CU Escape — 1.4.9
+# CU Escape — 1.5.0
 
 A browser escape game with ENS and SBCC, Key and Puzzle modes, desktop/mobile controls, solo play, room-name multiplayer, saved accounts and four-student Ranked matchmaking.
 
-Read [UPDATE_1.4.9.md](UPDATE_1.4.9.md) for the walkable campus, public building lobbies and SSC patio trading. This archive has not been deployed by this chat. The Flex rewards and achievement backpay from 1.4.6 and rendering fixes from 1.4.5 remain.
+Read [UPDATE_1.5.0.md](UPDATE_1.5.0.md) for the SSC clearance repair and photo-guided terrain grades. This archive has not been deployed by this chat. The Flex rewards and achievement backpay from 1.4.6 and rendering fixes from 1.4.5 remain.
 
 ## Install or update
 
 1. Extract the ZIP. Replace all corresponding files in the existing linked GitHub repository, including the new `campus.cjs`, `public/campus.js` and `public/ranked-setup.js`.
 2. Commit to the branch Render deploys. Wait for the deployment to finish.
 3. Keep the existing `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` environment variables and database. New tables initialize automatically; accounts, rank, achievements and purchases stay intact.
-4. Have everyone refresh. Both editions use version **1.4.9 / protocol 39**. Old open tabs cannot join an updated round.
+4. Have everyone refresh. Both editions use version **1.5.0 / protocol 40**. Old open tabs cannot join an updated round.
 
 See [DEPLOY.md](DEPLOY.md) for hosting and [PERSISTENCE.md](PERSISTENCE.md) for Turso and backups. Use one Node service instance: its real-time rooms, shared matchmaking and campus world are held in that process. Multi-instance hosting requires a shared real-time broker.
 
@@ -24,7 +24,7 @@ Visit `http://localhost:3000`; `/desktop` and `/mobile` choose the controls. `np
 
 ## Play
 
-Solo starts immediately. For standard multiplayer, students enter the same room name; the host's map, mode and difficulty are loaded automatically. Everyone waits in the shared 3D campus, starting beside Cedar Lake, until that room's host starts. Use Explore Campus / Find Players from the menu to meet students without a room name. Walk to an ENS or SBCC entrance and press F / Enter to join an open public group or create one. Other labeled buildings display Coming soon. Public groups stay associated with their building; the host can choose mode/difficulty and starts the game. Private room-name groups never appear in the public directory. The campus map starts near the lake, with a full-campus view and a searchable building directory. Settings can change between rounds without requiring a new room name.
+Solo starts immediately. For standard multiplayer, students enter the same room name; the host's map, mode and difficulty are loaded automatically. Everyone waits in the shared 3D campus, starting beside Cedar Lake, until that room's host starts. Use Explore Campus / Find Players from the menu to meet students without a room name. Walk to an ENS or SBCC entrance and press F / Enter to join an open public group or create one. Other labeled buildings display Coming soon. Public groups stay associated with their building; the host can choose mode/difficulty and starts the game. Private room-name groups never appear in the public directory. The campus map starts near the lake, with a full-campus view and a searchable building directory. The SSC is set back from the shore with an open promenade. Walkable sloped lake banks, raised lawns and the SBCC terraced landscape replace the flat ground. Terrain elevations are photo-guided estimates, not survey measurements. Settings can change between rounds without requiring a new room name.
 
 Ranked has no room code. It finds **three other students** at your exact rank and level for **four total**, chooses ENS or SBCC randomly, and runs Key Mode / Hard with private keys and personal locks. See the release notes for Diamond+ start selection and immediate elimination on capture.
 

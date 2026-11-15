@@ -43,3 +43,18 @@ Gross floor area is the sum of floors, **not** a building's ground footprint. It
 The SSC patio has curved paving and fixed outdoor seating in front of the lake-facing student center. All trading tables are placed on that patio. The row/grid arrangement is adapted for the game's 24 two-person trade stations rather than claimed as an exact count/layout of real campus furniture.
 
 Photography and the official PDF were used as reference, not bundled as runtime textures. The model uses original procedural geometry/materials and generalized exterior details. Some reference searches returned mislabeled buildings; a photograph visibly marked Stevens Student Center was treated as SSC, not as ENS. ENS and smaller buildings rely more heavily on the official illustrated map where an independently verified façade reference was unavailable.
+
+## 1.5.0 terrain and SSC circulation repair
+
+The previous flat ground missed the landscape grading visible in the references. Additional references reviewed for this update include:
+
+- [REALM: SBCC event lawn, terraced seating and lakeside circulation](https://www.realmcollaborative.com/work/cedarville-school-of-business)
+- [REALM: SSC plaza, including the aerial patio photograph](https://www.realmcollaborative.com/work/cedarville-university-stevens-student-center-plaza)
+- [Cedarville: lakeside patio sunset photograph](https://www.cedarville.edu/admissions/visit)
+- [Cedarville: Homecoming lakeside lawn photograph](https://www.cedarville.edu/media/video-player/1_5sjeyhbh)
+
+The landscape architect describes the plaza stepping down toward Cedar Lake and the SBCC terrace/amphitheater connecting to the lake walk. The photos show sloped grass banks and terraced retaining/seating walls. Those visible relationships guide the new grades; they do not establish exact elevations. Relative heights, the broad western rise and path slopes remain approximations. No surveyed terrain dataset or measured elevation plan was available for this model.
+
+The SSC's estimated footprint was set farther back from the lake to clear its promenade. Small clearance corrections at Chick-fil-A/BTS and detours at building corners prevent the illustrated-map footprints from cutting the walking circuit. These are gameplay-scale footprint corrections, not a claim that buildings have moved on the real campus. The SSC patio and all 24 trade tables stay in place.
+
+The terrain is triangulated at finer resolution near the water. Camera, avatar feet and server movement use the same triangle heights; level water, raised foundations, paved surfaces and the flat trade patio use their corresponding surface heights. The indoor ENS/SBCC maps are unchanged.
