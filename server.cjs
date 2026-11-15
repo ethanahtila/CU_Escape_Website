@@ -139,7 +139,7 @@ function createGameServer(options = {}) {
       if (message.type === 'ens_action' && ['start', 'restart', 'lobby'].includes(message.action) && id !== room.host) { error(ws, 'host_only', 'Only the host may start or restart the round.'); return; }
 
       const verified = { ...message, playerId: id };if(message.type==='ens_state'&&Array.isArray(message.players))verified.players=message.players.map(a=>{if(!Array.isArray(a))return a;const row=[...a];row[36]=room.players.get(row[0])?.equippedCosmetics||{skin:'default',head:'none'};return row;});
-      if (message.type === 'ens_state') {progression.exclusive(()=>progressionHttp.observe(room,message)).catch(()=>console.warn('A completed casual run could not be saved.'));room.phase=message.phase;room.round=message.round;if(Array.isArray(message.players))room.roles=new Set(message.players.filter(a=>Array.isArray(a)&&a[30]?.spectator).map(a=>a[0]));broadcast(room, verified, ws);}
+      if (message.type === 'ens_state') {progressionHttp.observe(room,message).catch(()=>console.warn('A completed casual run could not be saved.'));room.phase=message.phase;room.round=message.round;if(Array.isArray(message.players))room.roles=new Set(message.players.filter(a=>Array.isArray(a)&&a[30]?.spectator).map(a=>a[0]));broadcast(room, verified, ws);}
       else if (room.host !== id) send(room.players.get(room.host), verified);
     }catch{error(ws,'storage_unavailable','Saved profiles are temporarily unavailable. Please try again.');}
     });

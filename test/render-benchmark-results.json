@@ -1,0 +1,147 @@
+{
+  "description": "Local JavaScript render-work benchmark with headless canvas fixture, not browser FPS. Same seeded four-player worlds and moving camera poses.",
+  "beforeVersion": "1.4.4",
+  "afterVersion": "1.4.5",
+  "before": {
+    "frames": 12,
+    "rows": [
+      {
+        "map": "ens",
+        "view": "hall",
+        "medianMs": 32.09,
+        "p95Ms": 61.67
+      },
+      {
+        "map": "ens",
+        "view": "stairs",
+        "medianMs": 214.79,
+        "p95Ms": 866.68
+      },
+      {
+        "map": "ens",
+        "view": "room",
+        "medianMs": 25.87,
+        "p95Ms": 28.45
+      },
+      {
+        "map": "ens",
+        "view": "exit",
+        "medianMs": 166.64,
+        "p95Ms": 462.91
+      },
+      {
+        "map": "ens",
+        "view": "simulation",
+        "medianMs": 0.1,
+        "p95Ms": 4.77
+      },
+      {
+        "map": "berg",
+        "view": "hall",
+        "medianMs": 48.75,
+        "p95Ms": 76.96
+      },
+      {
+        "map": "berg",
+        "view": "stairs",
+        "medianMs": 193.94,
+        "p95Ms": 285.32
+      },
+      {
+        "map": "berg",
+        "view": "room",
+        "medianMs": 59.92,
+        "p95Ms": 86.61
+      },
+      {
+        "map": "berg",
+        "view": "exit",
+        "medianMs": 139.68,
+        "p95Ms": 148.01
+      },
+      {
+        "map": "berg",
+        "view": "cafe",
+        "medianMs": 269.96,
+        "p95Ms": 288.53
+      },
+      {
+        "map": "berg",
+        "view": "simulation",
+        "medianMs": 0.1,
+        "p95Ms": 0.54
+      }
+    ]
+  },
+  "after": {
+    "frames": 25,
+    "rows": [
+      {
+        "map": "ens",
+        "view": "hall",
+        "medianMs": 6.02,
+        "p95Ms": 7.25
+      },
+      {
+        "map": "ens",
+        "view": "stairs",
+        "medianMs": 11.32,
+        "p95Ms": 15.94
+      },
+      {
+        "map": "ens",
+        "view": "room",
+        "medianMs": 4.07,
+        "p95Ms": 4.91
+      },
+      {
+        "map": "ens",
+        "view": "exit",
+        "medianMs": 10.57,
+        "p95Ms": 15.99
+      },
+      {
+        "map": "ens",
+        "view": "simulation",
+        "medianMs": 0.07,
+        "p95Ms": 3.57
+      },
+      {
+        "map": "berg",
+        "view": "hall",
+        "medianMs": 5.78,
+        "p95Ms": 7.03
+      },
+      {
+        "map": "berg",
+        "view": "stairs",
+        "medianMs": 14,
+        "p95Ms": 17.58
+      },
+      {
+        "map": "berg",
+        "view": "room",
+        "medianMs": 6.15,
+        "p95Ms": 8.6
+      },
+      {
+        "map": "berg",
+        "view": "exit",
+        "medianMs": 12.37,
+        "p95Ms": 19.74
+      },
+      {
+        "map": "berg",
+        "view": "cafe",
+        "medianMs": 17.07,
+        "p95Ms": 22.66
+      },
+      {
+        "map": "berg",
+        "view": "simulation",
+        "medianMs": 0.1,
+        "p95Ms": 0.56
+      }
+    ]
+  }
+}

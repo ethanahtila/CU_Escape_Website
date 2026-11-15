@@ -1,6 +1,6 @@
 {
   "name": "cu-escape",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "private": true,
   "description": "CU Escape: ENS and SBCC, solo and multiplayer, desktop and mobile.",
   "engines": {
@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "node server.cjs",
-    "test": "node --test test/*.test.cjs"
+    "test": "node --test --test-concurrency=2 test/*.test.cjs",
+    "benchmark": "node test/render-benchmark.cjs"
   },
   "dependencies": {
     "ws": "8.22.1"

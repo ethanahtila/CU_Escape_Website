@@ -1,15 +1,15 @@
-# CU Escape — 1.4.4
+# CU Escape — 1.4.5
 
 A browser escape game with ENS and SBCC, Key and Puzzle modes, desktop/mobile controls, solo play, room-name multiplayer, saved accounts and four-student Ranked matchmaking.
 
-Read [UPDATE_1.4.4.md](UPDATE_1.4.4.md) for this release's controls, performance changes, waiting lobby, trading, records and Ranked rules. This archive has not been deployed by this chat.
+Read [UPDATE_1.4.5.md](UPDATE_1.4.5.md) for this release's controls, performance changes, waiting lobby, trading, records and Ranked rules. This archive has not been deployed by this chat. Update 1.4.5 prioritizes renderer stalls and adds placement-based Ranked rewards and shared casual-win currency pools.
 
 ## Install or update
 
 1. Extract the ZIP. Replace all corresponding files in the existing linked GitHub repository, including the new `campus.cjs`, `public/campus.js` and `public/ranked-setup.js`.
 2. Commit to the branch Render deploys. Wait for the deployment to finish.
 3. Keep the existing `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` environment variables and database. New tables initialize automatically; accounts, rank, achievements and purchases stay intact.
-4. Have everyone refresh. Both editions use version **1.4.4 / protocol 34**. Old open tabs cannot join an updated round.
+4. Have everyone refresh. Both editions use version **1.4.5 / protocol 35**. Old open tabs cannot join an updated round.
 
 See [DEPLOY.md](DEPLOY.md) for hosting and [PERSISTENCE.md](PERSISTENCE.md) for Turso and backups. Use one Node service instance: its real-time rooms, shared matchmaking and campus world are held in that process. Multi-instance hosting requires a shared real-time broker.
 
@@ -57,7 +57,7 @@ Ranks are Wood, Bronze, Silver, Gold, Diamond, Mythic, Legendary, Masters, Plati
 
 ## Cosmetics and trading
 
-**Flex Dollars** replaces the currency name Night Notes without resetting balances. Ranked first-place escapes pay 20; second-place escapes pay a random 4–9; third/fourth and forfeits pay none. Awards and purchases are atomic and persistent. There are no real-money purchases or client-controlled wallet updates.
+**Flex Dollars** replaces the currency name Night Notes without resetting balances. Ranked first place pays 20 and second place pays a random 4–9 even without escaping; third/fourth pay none. Casual solo wins pay 4 / 5 / 6 / 8 by difficulty; multiplayer wins split 16 / 20 / 24 / 32 equally across the team, retaining fractional shares. Awards and purchases are persistent and idempotent, with currency updates inside transactions. There are no real-money purchases or client-controlled wallet updates.
 
 Each account gets a different five-item daily store. Yesterday's items are excluded. Existing purchases and equipped skin/headgear survive seasons and devices. There are **1,772 purchasable cosmetics**: seven populated rarity tiers with **253 each** (169 skins + 84 headgear), plus **The Afterlight**, the only Singularity item. Two starters are free. Ordinary rarity weights remain 45% Common, 27% Uncommon, 17% Rare, 7% Epic, 2.8% Legendary, 0.9% Exotic and 0.3% Mythic. The Afterlight has a separate **0.01% check per eligible personal daily rotation** and costs 1,000,000 Flex Dollars. Higher rarities add reactive effects but confer no gameplay advantage.
 
@@ -65,6 +65,6 @@ Trading requires two signed-in students seated at the same table, up to four ite
 
 ## Performance and verification
 
-Spectator mode and its continuous camera-upload stream are disabled. The lake pauses the building renderer, uses throttled nearby-player messages, and closes its connection and animation before a match. Navigation caches static checks, with dynamic doors/layouts invalidating the cache. Match snapshots are smaller and less frequent while local input prediction remains responsive. Host transfer preserves round state and continues held movement.
+Spectator mode and its continuous camera-upload stream are disabled. The lake pauses the building renderer, uses throttled nearby-player messages, and closes its connection and animation before a match. Navigation caches static checks, with dynamic doors/layouts invalidating the cache. Active snapshots target up to 20 Hz while local input prediction remains responsive. Floor/ceiling drawing is batched, geometry/depth buffers are reused, and moving render paths have reproducible benchmark coverage. Host transfer preserves round state and continues held movement.
 
 Automated tests cover both device editions, real WebSocket groups, host changes, personal inventories, shared exploration, furniture/stairs/elevators, Ranked matching, Diamond preparation, rewards, automatic boards, account achievements, cosmetic ownership and local/Turso transactions. Real-world Wi-Fi, server capacity and physical phone performance still need checking on the deployed game.
