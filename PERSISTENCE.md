@@ -1,4 +1,4 @@
-# Turso storage — update 1.4.3
+# Turso storage — update 1.4.4
 
 The game now connects directly to an external Turso/libSQL database. With this option, Render runs the game and multiplayer server; Turso stores accounts, password hashes, sessions, achievements, selected titles, ranks, leaderboards, wallets, permanent cosmetic ownership, equipped looks and personal daily shops. A paid Render disk is not required for Turso mode. The connection is server-side; database credentials never belong in HTML or GitHub.
 
@@ -43,4 +43,6 @@ Without Turso variables, local development still uses `data/cu-escape.sqlite`, o
 
 ## Economy persistence
 
-Update 1.4.3 creates its wallet, currency-award, ownership, equipment, shop-seed and personal-rotation tables automatically. Keep the same database and environment settings. Existing accounts and achievement IDs are preserved; Notes start at zero, with no retroactive payouts for races recorded before this feature. Wallets and items do not reset with ranked seasons. Purchases are atomic and owned items prevent duplicate charges after a network retry. Shop rotation rows use account ID and Cedarville date; refreshing, changing a name or logging in elsewhere does not reroll them. Retain the private shop seed with the database. No secret token or seed is sent to clients.
+Update 1.4.4 creates its wallet, currency-award, ownership, equipment, shop-seed and personal-rotation tables automatically. Keep the same database and environment settings. Existing accounts and achievement IDs are preserved; Notes start at zero, with no retroactive payouts for races recorded before this feature. Wallets and items do not reset with ranked seasons. Purchases are atomic and owned items prevent duplicate charges after a network retry. Shop rotation rows use account ID and Cedarville date; refreshing, changing a name or logging in elsewhere does not reroll them. Retain the private shop seed with the database. No secret token or seed is sent to clients.
+
+Update 1.4.4 also creates completed-round achievement deduplication and cosmetic-trade audit tables. No existing account, balance or ownership IDs are renamed. Keep the same database.

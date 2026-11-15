@@ -1,225 +1,70 @@
-# CU Escape Website — release 1.4.3
+# CU Escape — 1.4.4
 
-This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
+A browser escape game with ENS and SBCC, Key and Puzzle modes, desktop/mobile controls, solo play, room-name multiplayer, saved accounts and four-student Ranked matchmaking.
 
-## Current update: 1.4.3
+Read [UPDATE_1.4.4.md](UPDATE_1.4.4.md) for this release's controls, performance changes, waiting lobby, trading, records and Ranked rules. This archive has not been deployed by this chat.
 
-Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 33.
+## Install or update
 
-### Night Notes, personal store and customization
+1. Extract the ZIP. Replace all corresponding files in the existing linked GitHub repository, including the new `campus.cjs`, `public/campus.js` and `public/ranked-setup.js`.
+2. Commit to the branch Render deploys. Wait for the deployment to finish.
+3. Keep the existing `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` environment variables and database. New tables initialize automatically; accounts, rank, achievements and purchases stay intact.
+4. Have everyone refresh. Both editions use version **1.4.4 / protocol 34**. Old open tabs cannot join an updated round.
 
-**Night Notes** are cosmetic currency, separate from ranked credits. Finishing a ranked race earns 20 / 17 / 14 / 12 / 10 Notes for first through fifth place. Forfeits and timeouts earn none. Currency awards share the ranked-result transaction and are idempotent, so reconnects and retrying saves cannot award the same race twice. Casual play does not award Notes. There are no real-money purchase endpoints or client-controlled balance updates.
+See [DEPLOY.md](DEPLOY.md) for hosting and [PERSISTENCE.md](PERSISTENCE.md) for Turso and backups. Use one Node service instance: its real-time rooms, shared matchmaking and campus world are held in that process. Multi-instance hosting requires a shared real-time broker.
 
-The menu now has **Store**, **Skins & Headgear**, and a wallet button. Each signed-in account receives its own five-item lineup, fixed for the day across devices/reloads. It changes at midnight in `America/New_York`, matching the daily boards. Yesterday's items are excluded; older owned items can recur and are marked Owned. Ordinary slots roll a rarity, then uniformly choose from that tier's eligible items. Store purchases require confirmation, sufficient funds and membership in the account's current rotation. All ownership, balances, lifetime earnings, spending and equipped slots are saved in the account database and do not reset with ranked seasons.
+For local development, use Node 24 or newer:
 
-There are **1,772 purchasable cosmetics**, plus two free starter choices. Each of the seven populated rarities has exactly **253 items: 169 skins and 84 headgear pieces**. That makes 1,183 regular skins and 588 headgear items, plus The Afterlight as the sole Singularity skin. Hats include caps, beanies, crowns, halos, horns, antlers, wizard hats, top hats, headphones and visors. Outfits combine both slots. Owned collections are paginated at 24 items to keep large wardrobes usable on mobile. The catalog combines distinct palettes, clothing patterns, trim variants and headgear designs. The store previews and in-game student sprites use the same renderer. Cosmetic IDs must remain stable when extending the catalog; do not delete or rename purchased items. Higher tiers add reactive trim, orbiting sparks and colored mist; chase states intensify effects. These effects do not change speed, collision, capture rules or entity sight. Existing hiding, spectator invisibility and wall occlusion still apply.
+```sh
+npm ci
+npm start
+```
 
-| Rarity | Chance per ordinary slot | Price range (Night Notes) |
-| --- | ---: | ---: |
-| Common | 45% | 60–96 |
-| Uncommon | 27% | 350–560 |
-| Rare | 17% | 1,800–2,880 |
-| Epic | 7% | 10,000–16,000 |
-| Legendary | 2.8% | 50,000–80,000 |
-| Exotic | 0.9% | 125,000–200,000 |
-| Mythic | 0.3% | 250,000–400,000 |
-| Singularity | Separate daily check | 1,000,000 |
+Visit `http://localhost:3000`; `/desktop` and `/mobile` choose the controls. `npm test` runs the regression suite. The server supports HTTPS/WSS through a hosting provider or the included Caddy configuration. Secure Wi-Fi alone does not supply a multiplayer relay; the included Node server handles room connections. Render's linked-branch automatic deploy can publish later commits without players downloading a new HTML file.
 
-**The Afterlight is the only Singularity item.** It has an exact 1-in-10,000 (0.01%) check per eligible personal daily rotation, replacing one ordinary slot when selected. It cannot appear again the following day. It uses exclusive prismatic armor, energy shards, aurora mist, orbiting stars and a double eclipse halo. No other item shares this rarity or reaches its price. At the requested 10–20 Notes per completed race, one million Notes requires 50,000–100,000 races before considering other spending.
+## Play
 
-The original 100 achievements remain. **23 additional currency/collection achievements** bring the total to **123**. Big Pockets requires holding one million Notes at once; other goals track lifetime earnings, spending, collection sizes, skins/headgear and owning The Afterlight. These are server-awarded and cannot be imported as casual browser achievements. Unlocks remain after spending currency. The ten existing secret challenges retain their hidden requirements.
+Solo starts immediately. For standard multiplayer, students enter the same room name; the host's map, mode and difficulty are loaded automatically. Everyone waits in the Cedar Lake-inspired shared lobby until that room's host starts. Settings can change between rounds without requiring a new room name.
 
-### Persistent progression and achievements
+Ranked has no room code. It finds **three other students** at your exact rank and level for **four total**, chooses ENS or SBCC randomly, and runs Key Mode / Hard with private keys and personal locks. See the release notes for Diamond+ start selection and immediate elimination on capture.
 
-This update adds server-side Turso/libSQL storage using `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`. The existing free Render game service can keep running while accounts and progression are saved externally. The server automatically initializes tables and enables saved profiles/ranked when the connection is ready. See **PERSISTENCE.md** for the deployment steps; no SQLite upload is needed for an empty database. The cloud backend uses asynchronous parameterized SQL, serializes account/credit transactions and retries failed ranked result saves without awarding the same match twice. Multiplayer simulation does not wait for database operations.
+| Control | Action |
+| --- | --- |
+| WASD | Move |
+| Mouse / right-side swipe | Look horizontally and vertically |
+| F | Interact; punch a nearby rival in Ranked when no object interaction is targeted |
+| R | Drop one carried key or paper in every mode |
+| Shift | Crouch for up to 15 seconds |
+| Shift + F | Crawl through a vent |
+| Space | Jump onto furniture |
+| M / I | Map / Puzzle inventory |
 
-The Achievements & Titles tab now lists **123 achievements**, including the original 100, **10 secret challenges**, and 23 new currency/collection goals. Goals cover repeated escapes, both buildings/modes/difficulties, solo and team challenges, speed, clean escapes, collected items, locks, vents, lockers, jumping, crouching, stairs, elevators, rescues, ranked finishes/wins and rank milestones. Secret goals are deliberately very demanding, combining normal gameplay constraints; their names, requirements and titles stay hidden in the browser until earned. The private catalog stays on the server. Casual actions are counted per player, shared in snapshots and retained through host handoff; guest progress stays on that browser, while signed-in progress syncs to the profile. Counters for career goals continue across devices using the saved profile. Existing achievement IDs and title unlocks are retained.
+Mobile offers a left movement joystick, right-side look gestures, Use, Drop, Punch in Ranked, Jump, Crouch, Map and Inventory buttons. On iPhone, open the hosted HTTPS link in Safari and tap the game to enable audio. Physical iPhone behavior should be checked after deployment; this package has not been tested on a physical phone here.
 
-### My Rank
+Furniture blocks both students and entities. Each building retains distinct decorations and per-room layouts. Vents, lockers and collectibles use valid accessible sample positions. SBCC has two floors and a fixed café; ENS has three floors. Normal SBCC uses Dr. White only; Ranked uses two entities on either map. Grounded collectibles have a slight glow. Standing on furniture creates a last-ground-position decoy for up to six seconds; ordinary jumps do not make you invisible.
 
-The menu's **My Rank** button fetches your saved rank and shows the current level (1–5), total ranked credits, a progress bar and credits still needed for the next **level**. For example, Wood level 2 with 175 total credits shows 25 / 150 toward Wood level 3, with 125 credits remaining. Wood level 5 at 749 credits shows one credit to Bronze level 1. At Pro level 5, it shows that the highest level is reached; additional credits still count toward leaderboard standing. The same panel appears with match results and is available from Account. Opening it refreshes the saved profile, including season resets. If a refresh fails, any cached rank is clearly labeled as the last loaded value; players without a loaded profile get a login button.
+The map is shared with your team and reveals markers only in discovered areas. Keys and paper fragments belong to their carriers; R passes an item by dropping it, and capture drops all carried items. Only a key's carrier can spend it on a lock. Puzzle fragments reconstruct the team's clue sheets while held; a wrong four-digit exit code raises a ten-second alarm. Locker hiding lasts at most 15 seconds. Vents lead through a four-second crawl and a visible room exit. Stairs are physical, and elevators have doors and aimed floor controls.
 
-### Accounts, achievements and titles
+## Accounts, records and achievements
 
-The opening screen offers **Sign Up** and **Log In**. Choose a unique username (3–20 letters, numbers or underscores) and a password (12–128 characters). Usernames are case-insensitive for login and uniqueness. The same account restores achievements, equipped title, rank and credits on another device. Sessions last thirty days, and **Account → Log Out** ends the current device session. Passwords are hashed with salted scrypt; raw passwords are never saved. There is no email/password-reset service in this release, so keep your password safely. Existing legacy recovery-code profiles can add a username/password without losing their stored identity or progress.
+Sign up with a unique username and a password of 12–128 characters. Usernames are case-insensitive. Passwords use salted scrypt hashes; they are not stored in plain text. Login restores rank, achievements, titles, purchases and equipped cosmetics on another device. Sessions last 30 days. There is no email password-reset service, so keep the password safely. Legacy recovery-code profiles can be linked to a username/password.
 
-**Achievements & Titles** is a visible menu tab on both editions. Its Achievements tab lists every goal with Completed / Not completed status. Its Titles tab shows all achievement and ranked titles, disables locked choices, and equips one beside your name. Casual achievements can also be earned and retained on the current browser without a server account; signed-in casual unlocks sync to the server. Browser-only guest progress can be linked when signing up. Ranked titles require their profile unlocks, and Front Runner is awarded by the server for a ranked win.
+The menu includes **Achievements & Titles**, **My Rank**, **Leaderboards**, **Store**, **Skins & Headgear**, and **Trading Hall**. All 123 achievements remain, including ten secret challenges; earned rank and achievement titles share one equipped slot. My Rank shows progress to the next level, not merely the next rank. Guest achievements remain on the current browser; server progression requires persistent storage.
 
-Accounts, saved rankings and global leaderboards require persistent server storage. A login/password does not make temporary hosting storage permanent. On Render, configure Turso or a persistent disk as described in **PERSISTENCE.md** before signups are enabled. **Continue without a saved account** preserves casual play and browser-only achievements while storage is unavailable. Ranked matchmaking asks players to log in. No hosting settings or live site have been changed by this chat.
+Winning casual games are saved automatically to their daily and all-time boards. There are 32 casual categories (two buildings × two modes × four difficulties × two scopes), each displaying the top 50 and your own placement. Ranked has one season leaderboard. Daily boards and shops reset at midnight `America/New_York`, including daylight-saving changes. Ranked seasons reset on the 15th at midnight there. All-time casual results never reset automatically. Casual records rely on the client/host and are marked community verified; Ranked simulation and results are server-controlled.
 
-### Ranked, records and furniture evasion
+Ranks are Wood, Bronze, Silver, Gold, Diamond, Mythic, Legendary, Masters, Platinum and Pro, with five 150-credit levels per rank. Base escape rewards are +50–75 / +20–45 / −5–20 / −25–45 by place. Gains gradually reduce and losses increase from Diamond upward. A reached rank protects its first level from demotion. Mythic has an eleven-minute limit, decreasing by one minute per rank to seven at Pro. Captures, disconnects and timeouts eliminate a student; no loss can spend Flex Dollars.
 
-Choose **Ranked** beside ENS and SBCC in the map list. It exposes only **Ranked Key Mode / Hard**. Five total players (you and four others) join the one shared global queue; the server selects ENS or SBCC, then starts a three-second countdown. Normal room-name multiplayer stays available on ENS/SBCC.
+## Cosmetics and trading
 
-Ranked uses four private keys and four personal locks per student. Only your keys appear on your screen. F collects/uses keys and opens your exit after your locks are removed. H (HIT on touch) hits a nearby visible rival with a 1.25-second cooldown: one carried key returns to a random valid room on a random floor. Capture drops carried keys and places you in jail for five seconds before an entrance respawn with five seconds of immunity, so a competitive race cannot deadlock waiting for a rival to rescue you. Ranked disables spectators. Opening an exit starts the entity finale globally, but each rival must still unlock their own exit. Placement follows the order students cross the exit; exact same-tick ties use crossing fraction then player ID. Leaving or timing out counts as a loss using the last-place penalty.
+**Flex Dollars** replaces the currency name Night Notes without resetting balances. Ranked first-place escapes pay 20; second-place escapes pay a random 4–9; third/fourth and forfeits pay none. Awards and purchases are atomic and persistent. There are no real-money purchases or client-controlled wallet updates.
 
-Ranks follow Wood, Bronze, Silver, Gold, Diamond, Mythic, Legendary, Masters, Platinum, Pro. Five stages per rank cost 150 credits each. Base rewards: first +50–75, second +20–45, third −5–20, fourth/fifth −25–45. Diamond through Pro reduce gains and increase losses in small 2.5 percentage-point steps per rank. Once a rank is reached that season, losses cannot fall below its first stage. Mythic has an eleven-minute deadline, then Legendary ten, Masters nine, Platinum eight, Pro seven. Ranked has no room-name field, invitation code or private host. The longest-waiting student is matched with four randomly drawn queued students, regardless of casual room names, selected building or rank. There is one matchmaking pool on the game server; game lobbies are formed automatically. One Node service owns this pool and creates separate automatic matches as capacity permits; players cannot choose or name those matches. Additional queued players wait when the service is full.
+Each account gets a different five-item daily store. Yesterday's items are excluded. Existing purchases and equipped skin/headgear survive seasons and devices. There are **1,772 purchasable cosmetics**: seven populated rarity tiers with **253 each** (169 skins + 84 headgear), plus **The Afterlight**, the only Singularity item. Two starters are free. Ordinary rarity weights remain 45% Common, 27% Uncommon, 17% Rare, 7% Epic, 2.8% Legendary, 0.9% Exotic and 0.3% Mythic. The Afterlight has a separate **0.01% check per eligible personal daily rotation** and costs 1,000,000 Flex Dollars. Higher rarities add reactive effects but confer no gameplay advantage.
 
-**Leaderboards** includes 32 casual categories: two maps × two modes × four difficulties × daily/all-time. Each shows the fastest 50 runs and your placement even beyond 50. A win prompts whether to publish. Casual results are community submitted; spectator-assisted runs are excluded. There is exactly one ranked leaderboard, sorted by season credits across both maps. Daily boards change at midnight Cedarville time; ranked seasons restart on the 15th at midnight there. All-time casual results never automatically reset.
+Trading requires two signed-in students seated at the same table, up to four items per side, equal combined rarity value and both acceptances of the current offer. Each rarity doubles the preceding tier's trade value. Currency and starters cannot be traded. Duplicate incoming cosmetics are refused because collections do not have item stacks. Ownership transfers together or not at all; accounts do not lose currency in a trade. See the release notes for details and current lobby capacity.
 
-**Achievements & Titles** shows achievement progress and equipped titles; **Account** provides login/logout. Legacy recovery-code profiles remain under **Profile / recovery**. Rank and achievement titles can be selected beside your name. Speed Demon requires an Extreme escape in at most five minutes. Other titles reward first escape, clean escape, Puzzle Mode, team play, ten escapes and a ranked win. New profiles use a chosen username and password; legacy recovery codes can be linked to a new login. Titles remain unlocked across seasons.
+## Performance and verification
 
-**Persistent hosting setup is required** for saved records and ranked on Render. The existing free hosting configuration remains unchanged. Read **PERSISTENCE.md** before enabling those features; it includes Turso settings, backups and an optional local-disk deployment example. This package does not purchase hosting or deploy itself.
+Spectator mode and its continuous camera-upload stream are disabled. The lake pauses the building renderer, uses throttled nearby-player messages, and closes its connection and animation before a match. Navigation caches static checks, with dynamic doors/layouts invalidating the cache. Match snapshots are smaller and less frequent while local input prediction remains responsive. Host transfer preserves round state and continues held movement.
 
-Standing on solid furniture now sends hunting entities to your last grounded position for up to six seconds. Leaving the object restores real tracking immediately. After six seconds, a nearby entity can pull you down. Ordinary jumps do not gain this decoy. Easy, Normal, Hard and Extreme each have a slight increase to entity speed, sight and search persistence; the existing gentle multiplayer scaling remains.
-
-### Owner controls: spectator mode
-
-Alt + P toggles spectator mode after joining. There is no menu entry or public entry button. Ghost bodies and map arrows are invisible to ordinary players. Spectators stay listed as Students, cannot collect items/rescue/unlock, cannot be caught, do not reveal the shared map, and do not count toward difficulty/key scaling or student win/loss checks. Entering drops carried keys/papers. Leaving returns the student to the entrance with five seconds of immunity. Spectator status persists into a new round; controlled entities are released for that new round.
-
-- V toggles flying/following; [ and ] (or Tab) switch watched students. Buttons appear only once spectator mode is active.
-- Fly with WASD and mouse look, Space up and Shift down. Touch movement/look and Up/Down buttons are available after entry; entering on a phone requires a keyboard that can send Alt + P. Interior walls and furniture can be passed through; an envelope derived from each floor's outside boundary keeps flight inside the building.
-- Follow mode renders the watched player's live camera, pitch, crouch, map-open, vent and locker view. Paper inventory/keypad views are mirrored read-only; the briefing/settings menu is not shared. Camera/UI view packets are sent directly to spectators up to 25 times per second, while host world snapshots update up to 20 times per second. There is no deliberate multi-second delay; actual network/device latency remains unavoidable.
-- Q emits a loud synthesized siren heard across every floor for two seconds. It attracts AI entities to the ghost location (or watched student's location in follow mode). The host enforces a 20-second cooldown. Sound mute/effects volume remain per device.
-- F near an unoccupied entity takes control. WASD/mouse then control that entity using normal furniture collision and stairs; it cannot jump or crouch. Only one spectator may control each entity. F captures a nearby eligible student; if nobody can be captured, F calls/opens the elevator or selects the aimed floor button inside it. Captures keep existing vent/locker, jump and rescue-immunity protections and drop carried items normally. Controlled entities do not capture automatically.
-- E releases the entity back to AI. R activates a ten-second speed boost when ready. Existing energy readiness is retained (ENS White starts with 40 seconds); each activation recharges over the usual 28–52-second energy interval. The permanent exit boost still overrides the temporary ability. An existing AI activation also sets the recharge timer.
-- The controlled entity's map shows only its current sight-radius area and students within it, with no exploration history. Ghosts also have a local radius map for navigation; neither map modifies team discovery.
-
-Controller identity, ability readiness, roles, noise cooldown and positions are host-authoritative and shared in snapshots. They survive host handoff; a disconnect releases an entity, and a watched student's departure returns followers to flight. Direct view packets use relay-authenticated sender IDs and are delivered only to host-registered spectators. Alt + P is a hidden shortcut, not account-level access control.
-
-### Crouching
-
-Hold Shift on desktop or toggle CROUCH on mobile. Crouching lowers the camera and avatar, slows movement by 25%, and reduces an unaware entity's spotting distance to 1.25 tiles with clear line of sight. Previously spotted students remain detectable while the entity remembers them. Noise investigations, alarm reveals, close-contact capture and the exit finale still apply.
-
-Maximum crouch duration is 15 seconds. Ending a session shorter than 10 seconds starts a cooldown of twice the crouched duration; at 10–15 seconds the cooldown equals the duration. Five seconds crouched means ten seconds recovery; fifteen means fifteen. Cooldowns advance with game time. Stairs, jumping, lockers, vents and capture force standing; stairs cannot be crouched through. Shift + F remains the vent interaction even while recovering. A HUD shows remaining crouch/recovery time. Player posture/timers and per-entity sight memory are shared in multiplayer and preserved through host transfer. Spectator controls are documented in the owner section below.
-
-### Join by room name
-
-Only the room name is required to join an existing hosted game. The relay places the student with that host; snapshots replace the joining device’s map, mode and difficulty automatically. Local selections apply only when creating a new room. Selectors lock during synchronization, and the joining/status messages explain that the host’s settings are loading. Room names are case-sensitive.
-
-### Multiplayer room entry
-
-Successful joins now enter the 3D multiplayer lobby immediately. The host sees a visible Start game button; guests see the room/player count and who is hosting. Room settings remain available, and the menu always has Enter multiplayer lobby while waiting. Connection text clears once synchronization finishes. Starting from either button publishes a fresh round and opens gameplay for all clients. Returning the group to settings after a round still works.
-
-### SBCC furniture
-
-SBCC now uses a dedicated physical furniture palette instead of ENS desks, lab benches and bookcases: drawer-pedestal executive desks, swivel chairs, pedestal conference/seminar tables, upholstered sofas, filing cabinets, credenzas, stone planters, framed digital displays, presentation podiums, padded theater seats, enclosed server racks and dual-screen security consoles. These have different silhouettes and modeled structural parts, not just changed colors. Each named room and annex room retains its fixed placement profile. Walkways and interactable spawn slots remain clear. Player/entity collision includes seat backs, sofa arms and console monitors. ENS furniture and the café fixtures/layout are retained.
-
-### Elevator inspection
-
-After the opening alert delay, entities investigate the elevator as before. Each entity that reaches the landing checks it for three seconds, then resumes hunting. Once those checks finish (or another entity is diverted to a player/another alert), the empty car closes in place. Doors wait for students and entities to clear the cabin and threshold. Closing does not send the elevator to another floor or trigger a new AI alert. Players use F to open/call the elevator again; the existing eight-second outside-call and fifteen-second arrival delays remain. Inspection progress is shared in snapshots and survives host handoff.
-
-### Controls
-
-- WASD moves. Mouse movement / right-side touch dragging looks left, right, up and down. Arrow keys also turn and tilt the view.
-- F is the single world-interaction key: collect keys/papers, use or leave lockers, open/call elevators, aim at a small floor button to select it, rescue, unlock/open the exit, or return from outside to rescue.
-- Shift + F crawls through a nearby vent. On mobile, toggle crouch and tap USE.
-- Space jumps. Mobile has a JUMP button. Players can jump onto suitable tables/desks/chairs and move over them; entities stay on the floor and must navigate around furniture. Only sufficiently high airborne jumps evade contact; standing on a desk is not an immunity state.
-- If carrying keys/papers and no nearby object has an interaction, F drops one carried item. The on-screen action hint indicates this. M opens the map; I opens the puzzle inventory.
-
-### Rooms and graphics
-
-Every room in both maps, including annex rooms, has a sample defining fixed furnishing groups and possible collectible, vent and locker slots. The 160 individually keyed room profiles define the ENS palette and the separate SBCC palette, with a separate anchor list for each room. Fixtures fit the actual room shape while maintaining door approaches, and stay in the same positions across matches and devices. Jail samples remain empty. The café keeps its existing layout.
-
-Furniture uses grounded 3D meshes with table/chair legs, beveled tops, monitors, shelves, lecterns, plants and wall-mounted boards. Players and entities share physical collision geometry; monitors, chair backs and lockers are also solid. Keys and paper fragments are smaller physical meshes resting on the ground, with thin visible edges and a very faint ground glow, including dropped items. The sample generator preserves door approaches and connected walking paths. Random interactive items are selected from its clear, fixed slots.
-
-### Local audio and player names
-
-The menu has a player-name field and separate entity-footstep and chase-music sliders, alongside background/capture music controls and the master mute. Preferences are stored locally in that browser. Names apply on the next join (or immediately for solo), are limited to 20 characters, and appear on player labels, the team list and the full map.
-
-Footsteps are audible within sight range plus six tiles on the same floor, with distance attenuation and wall muffling. Every new chase independently chooses one of two original action scores with equal probability: Night Signal at 188 BPM (distorted bass, bent synth stabs and industrial break percussion) or Redline at 204 BPM (racing arpeggios, layered synth strings and heavy drums). Both are faster than the previous 156 BPM score. The selection stays fixed during the chase and survives brief menu/mute pauses. A soft distortion stage and output compressor control the denser mix. These are original synthesized compositions with the requested broad cinematic moods, not film recordings or recreated film melodies. It starts with clear line of sight up to three tiles beyond entity sight; this does not change entity detection. Once the exit opens and the permanent entity buffs activate, chase music plays for every player across all floors and hiding states until the round ends. Capture Doxology still takes priority. Locker and vent creaks never trigger AI alerts. Elevator doors slide and ding on opening and closing; an original light instrumental loop plays only inside the car. New effects and elevator-music sliders are saved independently with existing audio preferences. Alert callouts use the generic Loud noise label for elevators, rescue-expiry reveals and keypad alarms.
-
-
-### Play another round with the same group
-
-At the end of a multiplayer round, the host chooses Menu or New randomized round to return the entire connected group to the lobby. The host can then change the map, mode and difficulty and choose Start round. During a round, Return group to lobby is also available in the host’s menu. Guests wait for the host. No page reload or new room is needed.
-
-In the lobby, the host can edit the room-name field and select Rename room for everyone. The relay moves the existing group together, retains player IDs/names and rejects occupied names. Copy room link uses the actual connected room. Leave room exits the group without reloading the page.
-
-## Publish once
-
-Use your existing hosting service to redeploy this update. The first-time setup below is only needed when moving to a new host.
-
-One supported hosting route is Render:
-
-1. Put the contents of this folder into a GitHub repository (package.json must be at its root).
-2. Sign in to Render and create a Node Web Service connected to that repository. Alternatively, create a Blueprint using the included render.yaml.
-3. Build command: `npm ci`. Start command: `npm start`. Health-check path: `/healthz`. Node version: 24. Run ONE instance. Review your hosting plan before deployment; the supplied Blueprint selects the free plan.
-4. After deployment finishes, Render provides the actual HTTPS address. That is the link to share. No custom domain is required.
-5. Open that link on three devices, join the same room, start a round and verify movement and interactions on the intended Wi-Fi.
-
-Hosting documentation: https://render.com/docs/deploy-node-express-app and https://render.com/docs/websocket
-
-A static-only host cannot run this multiplayer relay. The web service handles HTTPS/WSS on one address. On a campus-managed server, place HTTPS in front of the Node app and forward WebSocket upgrades for `/relay`. Preserve the public Host header, or set PUBLIC_ORIGIN to the exact public HTTPS origin.
-
-## Playing
-
-Open the website link. Phone/tablet controls are selected automatically, with an option to switch controls in the menu. Choose Play solo, or enter a shared room name and choose Join multiplayer. Copy room link produces a link that works for either device type. The first student is host; wait for friends and start the round. Different room names create separate games. Each room supports up to 16 students.
-
-Players do not need to download files. Being on the same Wi-Fi is not required. Campus Wi-Fi must permit HTTPS and secure WebSocket traffic to the published host; sharing the Wi-Fi alone does not guarantee connectivity.
-
-## Updating the game
-
-Update the hosted desktop.html and mobile.html files together and redeploy. Players refresh the same website address to load the update. HTML is served with no-store caching. Already-open tabs continue running their loaded version until refreshed. A server deployment/restart disconnects existing multiplayer sessions, so publish between games. Do not run two independent server instances: rooms live in memory and are not shared across instances.
-
-The downloadable HTML editions are separate copies; changing them in ChatGPT does not automatically publish this website. Future website updates must also be deployed to your host.
-
-## Local development
-
-Run `npm ci`, `npm test`, then `npm start`. Open http://localhost:3000. This local address is not a public share link. PORT defaults to 3000, HOST to 0.0.0.0. The health endpoint is `/healthz`.
-
-The host browser runs the simulation. Host departure transfers authority to a remaining player. Restarting the server ends connections; no permanent saves or accounts are provided. The relay isolates rooms, assigns player identities, restricts snapshots to the current host, permits key dropping and puzzle/elevator/locker actions, and sends heartbeat pings.
-
-## Contents
-
-public/index.html selects controls; public/desktop.html and public/mobile.html contain both maps and modes. server.cjs serves the website and multiplayer relay. package-lock.json pins dependencies. Dockerfile and render.yaml are optional deployment configurations. test/ contains local verification tests.
-
-## Checks performed for this release
-
-Nine automated website/server tests passed, including three real WebSocket clients, separate room isolation, host handoff, origin checks, secure-URL configuration, device routing and invitation links. Additional full-game client simulations passed for both device host types, paper capture/rescue, vent travel, late joins, host changes, key and keypad exits, and switching back to ENS. These are local checks, not a live public deployment, physical iPhone test or campus firewall test.
-
-## Secure multiplayer (WSS)
-
-Secure Wi-Fi is not a substitute for TLS on the game server. The hosted clients already choose `wss://<your website>/relay` automatically. Render supplies HTTPS/WSS after deployment. For your own server, the included compose.yaml and Caddyfile provide automatic HTTPS and WebSocket proxying: point a real domain to your server, allow inbound ports 80/443, set GAME_DOMAIN to that domain in .env, then run `docker compose up -d --build`. Caddy requests and renews the certificate. No real public domain, server, or certificate has been provisioned by this package. Documentation: https://caddyserver.com/docs/automatic-https
-
-Alternatively, set both TLS_CERT_PATH and TLS_KEY_PATH to valid certificate/key files before `npm start`; the Node server will serve HTTPS and WSS directly. Never commit real TLS private keys. Certificate hostnames must match the URL and be trusted by players' browsers. A self-signed development certificate does not create a public trusted service.
-
-## Release 1.1.0 gameplay
-
-Opening the exit starts permanent double-speed pursuit for every active entity (including both ENS entities), with building-wide tracking even in solo. Unlocking without opening the doors does not trigger it. Puzzle Mode triggers the same phase when the correct code opens the exit. Hiding and rescue immunity still work.
-
-The round wins when everyone is outside and loses only when everyone is jailed. Outside players may use E / USE to return if a teammate is jailed. Jailed players can move and turn within the empty barred cell but cannot leave or interact. Rescuing teleports prisoners just outside the cell; they receive five seconds of immunity and the rescuer receives two. When each immunity ends, entities receive that player's location at that moment for a ten-second investigation. The timers survive late joins and host transfers.
-
-Additional release checks passed for jail confinement and movement on both maps/devices; correct 5s/2s rescue immunity and expiration reveals; rescue timers across host transfer; outside-player reentry and loss/win conditions; permanent final pursuit; and three real TLS-validated WSS connections with HTTPS game serving. The WSS test used a temporary local development certificate, not a public certificate or deployed domain.
-
-## Release 1.1.1 — multiplayer coordination and movement
-
-This update was built from the supplied live-deployment archive. Hosting routes, relay configuration, TLS/WSS support, maps, modes, per-player key ownership, exit surge, rescue/reentry and barred jail behavior are retained. Redeploy this entire package, then have every player refresh before joining. Protocol 21 requires all players to use the new update.
-
-- Each additional player adds 0.8% entity speed, 2.5% sight/memory/search duration and a small route-update increase. Ordinary multiplayer uses sight and memory rather than immediately knowing every player's position. The permanent double-speed, building-wide exit pursuit remains.
-- ENS entities that see one another within ten tiles for three continuous seconds choose separate reachable destinations for up to eight seconds. Walls and different floors reset the sight timer. SBCC still has only Dr. White.
-- Discovery from every player's authoritative position is combined into one team floor map, including landmark/enemy-marker visibility. New joins and host changes keep the accumulated discovery. It resets with the round.
-- The yellow key HUD now displays team-carried keys / remaining locks. Dropping or using a key decreases the shared carried total. The team list still shows individual inventories; only the carrier may unlock a door or drop that key. Used keys and dropped keys remain accounted for by the existing objective text. Puzzle inventory is unchanged.
-- Movement uses sequenced, acknowledged commands and replay of unprocessed inputs. Position corrections preserve camera heading; intentional vent-exit facing is preserved. Pointer-lock transitions and abandoned drags are reset, and repeated jail snapshots no longer clear held controls.
-
-Local verification includes simulated delayed updates, partial acknowledgments, camera/stair/jail correction, shared discovery with late join/host handoff, key ownership/HUD agreement, gradual scaling and entity separation, plus three full game clients through the actual relay. Campus-network latency and device performance still require a live playtest after redeployment.
-
-Verification result for this package: all 19 included tests passed, including three full game clients through the real relay and delayed-update movement simulations.
-
-Release 1.1.2 verification: 29 tests passed covering grounded room samples and collision, reachable interactive slots across both maps and expansion tiers, jump physics and partial movement acknowledgment, vertical elevator aiming, flat collectible geometry, local audio/mute/capture transitions, shared player names and host transfer, and full clients through the real relay. Native canvas renders were inspected for classroom furniture, compact elevator buttons and vertical views. These are local checks; the update still needs deployment and a live device/network playtest.
-
-Release 1.1.3 verification: 35 tests passed, including repeated multiplayer rounds with map/mode/difficulty changes, whole-group room renaming and host handoff, original room-object profiles across expansion tiers, F interactions, reachable spawns, physical collectibles with a faint glow, and audio/mute/finale transitions. Native canvas renders were inspected for the smaller pickups and visible edges. The sounds are synthesized in-browser; subjective music balance and campus-network/device performance still need a live playtest after redeployment.
-
-Release 1.1.4 verification: 36 automated tests passed. New checks force both chase-score choices on desktop and mobile, verify faster scheduling and selection stability during playback/mute/menu pauses, and cover rerolling for a new chase, exit-finale music and capture priority. Other gameplay, lobby, room, relay and control checks remain included. Browser audio playback could not be exercised in this environment; listen on your actual device after deployment to judge the mix and musical feel.
-
-Release 1.1.5 verification: all 41 automated tests passed. Elevator checks cover investigation completion on both devices, waiting for both ENS entities, cabin/doorway clearance, closing without travel, reopening with F and the usual alert delay, normal passenger trips, and host handoff/late joining with inspection and door state preserved.
-
-Release 1.3.1 verification: all 43 automated tests passed, including disjoint ENS/SBCC furniture palettes, grounded SBCC geometry, detailed seat/sofa/monitor collision, matching desktop/mobile room profiles, accessible spawns and routes across expansion tiers, and unchanged ENS/cafe geometry. Native canvas views of an office, meeting room, cybersecurity room and auditorium were inspected. Existing lobby, relay, chase audio and elevator inspection tests remain included.
-
-Release 1.3.2 verification: all 44 automated tests passed. New real-relay checks use the Join multiplayer and visible Start game button handlers for three clients, including a mobile host, on ENS Key Mode and SBCC Puzzle Mode. They verify entry leaves the settings overlay, lobby/waiting controls are visible, gameplay opens for everyone, remote movement reaches the host, and the same group can restart from the settings menu. These are local automated checks; the updated package still requires deployment and refreshing all players’ tabs.
-
-Release 1.3.3 verification: all 49 automated tests passed. Crouch tests cover 1/5/9.5/10/12/15-second sessions, exact tiered cooldowns, reduced speed/camera height, stairs/jump restrictions, automatic exhaustion, awareness-based detection, prediction/partial acknowledgments, snapshots and host handoff. Real-relay joining tests start with deliberately mismatched settings, verify room-name-only joining inherits the host settings, and verify late joins enter the running round. Native canvas standing/crouching views were inspected. No spectator implementation is included.
-
-Release 1.3.4 verification: all 61 automated tests passed. New tests cover Alt+P role entry, invisible ghost bodies/map arrows, Students-list naming, item/discovery/win-loss isolation, bounded flight, mobile flight controls, live camera/map following, radius-only map visibility, exclusive possession, manual captures, furniture collision, controlled elevator travel, existing/renewed ability recharge, global two-second Q siren timing and twenty-second cooldown, host handoff and controller disconnect. A real relay test delivers direct view packets to the observer while the ordinary host receives none, switches map state immediately, and preserves possession through host transfer. Native canvas entity-camera and radius-map renders were inspected. These are local checks; deployment and a live device/network playtest are still needed.
-
-Release 1.3.5 verification: 69 automated tests passed across the full regression suite and final focused checks. Tests cover the Ranked map tile on desktop/mobile, fixed mode/difficulty, returning to normal map selections, six-second furniture decoys and capture expiry, 32 board categories, opt-in ownership, top-50 limits and personal placements, SQLite reopen persistence, Cedarville/DST/season boundaries, rewards and rank floors, title unlocks, API/profile/browser UI integration, four-player queue/countdown/private keys/hits/personal exits, and four complete desktop/mobile clients moving through real ranked WebSockets. Existing gameplay, spectator, lobby, audio and collision checks remain included. These are local automated checks; no public deployment or real iPhone/campus-network playtest was performed in this update.
-
-Release 1.3.6 verification: all 72 automated tests passed. Ranked now ignores room codes, uses one shared queue, randomly selects four opponents, and starts a five-player match with one fixed mode/difficulty. New tests check hidden/disabled room controls and restored casual sharing on desktop/mobile, different or invalid room names not affecting real ranked connections, rejection of ranked state on the named casual relay, queue cancellation, cross-rank random opponent draws, and private keys/results for five students. Final focused checks also cover normal room links and fifth-place credit handling. Upload all extracted files to the existing repository and refresh all clients after deployment. This chat has not deployed the package.
-
-Release 1.3.7 verification: all 77 automated tests passed, with final focused account/title checks also passing. New coverage includes signup/login forms on both device editions, case-insensitive username uniqueness, salted password storage, incorrect credentials, session logout, account migration, achievements/title/ranked-credit retention after closing and reopening the server database, shared account access from another device, guest achievement persistence, unlocked/locked title choices, visible menu tabs and multiplayer title broadcasting. No public deployment or hardware iPhone test was performed.
-
-Release 1.3.8 verification: all 79 automated tests passed. Rank progress tests check all ranks and levels at 0/75/149 credits within a level, exact promotion boundaries, Pro level 5 maximum, fresh menu data, menu/result progress panels on desktop/mobile, and saved account/ranked integration. The update has not been publicly deployed by this chat.
-
-Release 1.4.2 verification: all 86 automated tests passed, plus final focused persistence/transaction checks. Turso tests use a local implementation of the documented SQL-over-HTTP protocol backed by SQLite; they cover automatic schema creation, account/title/rank/leaderboard retention after replacing the game server, concurrent credit writes, idempotent match awards, connection failure, asynchronous ranked saving and retries while simulation continues. Catalog tests cover exactly 100 unique goals, ten redacted secrets, satisfiable rule combinations, locked/earned secret-title disclosure, real pickup/drop/vent/jump/crouch counters and snapshot/host-handoff continuity. This is automated local verification, not a live connection test against your private Turso database, nor a hardware iPhone playtest. No public deployment was performed by this chat.
-
-Release 1.4.3 verification: all 96 automated tests passed in the full regression run, with final focused checks also passing. New tests cover eight rarity tiers, 253 purchasable items in each of the seven populated tiers, The Afterlight as the only Singularity item, its 1-in-10,000 eligible rotation check, five fixed personal offers, different account lineups, no consecutive-day repeats, Cedarville/DST midnight resets, placement payouts and forfeit behavior, duplicate award/purchase protection, insufficient-fund and ownership checks, million-Note spending/Big Pockets, session/season/restart retention, Turso backend replacement, desktop/mobile store and wardrobe flows, large-inventory pagination, unchanged movement/collision, and live multiplayer appearance updates including interpolated sprites and spoofed-look rejection. Native canvas previews of all eight rarity tiers were inspected. Turso integration was tested against a local implementation of its documented protocol; no private live-database connection, hardware iPhone test or public deployment was performed by this chat.
+Automated tests cover both device editions, real WebSocket groups, host changes, personal inventories, shared exploration, furniture/stairs/elevators, Ranked matching, Diamond preparation, rewards, automatic boards, account achievements, cosmetic ownership and local/Turso transactions. Real-world Wi-Fi, server capacity and physical phone performance still need checking on the deployed game.

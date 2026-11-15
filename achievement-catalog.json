@@ -1095,7 +1095,7 @@
   {
     "id": "economy_balance_100",
     "name": "Pocket Change",
-    "description": "Hold 100 Night Notes at once.",
+    "description": "Hold 100 Flex Dollars at once.",
     "condition": {
       "type": "economy",
       "stat": "balance",
@@ -1106,7 +1106,7 @@
   {
     "id": "economy_balance_1000",
     "name": "Note Taker",
-    "description": "Hold 1,000 Night Notes at once.",
+    "description": "Hold 1,000 Flex Dollars at once.",
     "condition": {
       "type": "economy",
       "stat": "balance",
@@ -1117,7 +1117,7 @@
   {
     "id": "economy_balance_10000",
     "name": "Night Treasurer",
-    "description": "Hold 10,000 Night Notes at once.",
+    "description": "Hold 10,000 Flex Dollars at once.",
     "condition": {
       "type": "economy",
       "stat": "balance",
@@ -1128,7 +1128,7 @@
   {
     "id": "economy_balance_100000",
     "name": "Vault Keeper",
-    "description": "Hold 100,000 Night Notes at once.",
+    "description": "Hold 100,000 Flex Dollars at once.",
     "condition": {
       "type": "economy",
       "stat": "balance",
@@ -1139,7 +1139,7 @@
   {
     "id": "economy_balance_1000000",
     "name": "Big Pockets",
-    "description": "Hold 1,000,000 Night Notes at once.",
+    "description": "Hold 1,000,000 Flex Dollars at once.",
     "condition": {
       "type": "economy",
       "stat": "balance",
@@ -1150,7 +1150,7 @@
   {
     "id": "economy_lifetime_100",
     "name": "Paid Internship",
-    "description": "Earn 100 Night Notes across ranked races.",
+    "description": "Earn 100 Flex Dollars across ranked races.",
     "condition": {
       "type": "economy",
       "stat": "lifetime",
@@ -1161,7 +1161,7 @@
   {
     "id": "economy_lifetime_1000",
     "name": "Night Earner",
-    "description": "Earn 1,000 Night Notes across ranked races.",
+    "description": "Earn 1,000 Flex Dollars across ranked races.",
     "condition": {
       "type": "economy",
       "stat": "lifetime",
@@ -1172,7 +1172,7 @@
   {
     "id": "economy_lifetime_10000",
     "name": "Campus Investor",
-    "description": "Earn 10,000 Night Notes across ranked races.",
+    "description": "Earn 10,000 Flex Dollars across ranked races.",
     "condition": {
       "type": "economy",
       "stat": "lifetime",
@@ -1183,7 +1183,7 @@
   {
     "id": "economy_lifetime_100000",
     "name": "Million Note March",
-    "description": "Earn 100,000 Night Notes across ranked races.",
+    "description": "Earn 100,000 Flex Dollars across ranked races.",
     "condition": {
       "type": "economy",
       "stat": "lifetime",
@@ -1194,7 +1194,7 @@
   {
     "id": "economy_lifetime_1000000",
     "name": "Night Millionaire",
-    "description": "Earn 1,000,000 Night Notes across ranked races.",
+    "description": "Earn 1,000,000 Flex Dollars across ranked races.",
     "condition": {
       "type": "economy",
       "stat": "lifetime",
@@ -1205,7 +1205,7 @@
   {
     "id": "economy_spent_100",
     "name": "Treat Yourself",
-    "description": "Spend 100 Night Notes in the store.",
+    "description": "Spend 100 Flex Dollars in the store.",
     "condition": {
       "type": "economy",
       "stat": "spent",
@@ -1216,7 +1216,7 @@
   {
     "id": "economy_spent_1000",
     "name": "Shopping Scholar",
-    "description": "Spend 1,000 Night Notes in the store.",
+    "description": "Spend 1,000 Flex Dollars in the store.",
     "condition": {
       "type": "economy",
       "stat": "spent",
@@ -1227,7 +1227,7 @@
   {
     "id": "economy_spent_10000",
     "name": "Style Investor",
-    "description": "Spend 10,000 Night Notes in the store.",
+    "description": "Spend 10,000 Flex Dollars in the store.",
     "condition": {
       "type": "economy",
       "stat": "spent",
@@ -1238,7 +1238,7 @@
   {
     "id": "economy_spent_100000",
     "name": "Premium Taste",
-    "description": "Spend 100,000 Night Notes in the store.",
+    "description": "Spend 100,000 Flex Dollars in the store.",
     "condition": {
       "type": "economy",
       "stat": "spent",
@@ -1249,7 +1249,7 @@
   {
     "id": "economy_spent_1000000",
     "name": "Million Note Style",
-    "description": "Spend 1,000,000 Night Notes in the store.",
+    "description": "Spend 1,000,000 Flex Dollars in the store.",
     "condition": {
       "type": "economy",
       "stat": "spent",

@@ -7,5 +7,5 @@ function dailyItems(seed,profile,day,excluded=[],injected){let counter=0;const r
 }
 function adjacentDay(day,amount){const d=new Date(day+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+amount);return d.toISOString().slice(0,10);}
 function resetAt(day){const tomorrow=adjacentDay(day,1),date=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'});for(const hour of [4,5]){const stamp=Date.parse(tomorrow+'T'+String(hour).padStart(2,'0')+':00:00Z'),p=Object.fromEntries(date.formatToParts(stamp).map(p=>[p.type,p.value]));if(p.hour==='00'&&`${p.year}-${p.month}-${p.day}`===tomorrow)return stamp;}throw Error('Unable to determine the daily shop reset.');}
-function placementNotes(place,forfeit){return forfeit?0:[20,17,14,12,10][place-1]||0;}
+function placementNotes(place,forfeit,random=(lo,hi)=>crypto.randomInt(lo,hi+1)){return forfeit?0:place===1?20:place===2?random(4,9):0;}
 module.exports={CATALOG,BY_ID,dailyItems,adjacentDay,resetAt,placementNotes};
