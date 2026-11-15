@@ -1,5 +1,6 @@
 'use strict';
 const {createCampus}=require('./campus.cjs');
+const {createCampusMatchmaking}=require('./campus-matchmaking.cjs');
 const http = require('node:http');
 const https = require('node:https');
 const fs = require('node:fs');
@@ -38,6 +39,8 @@ function createGameServer(options = {}) {
     '/robots.txt': ['robots.txt', 'text/plain; charset=utf-8'],
     '/progression.js':['progression.js','application/javascript; charset=utf-8'],
     '/campus.js':['campus.js','application/javascript; charset=utf-8'],
+    '/campus-world.js':['campus-world.js','application/javascript; charset=utf-8'],
+    '/campus-renderer.js':['campus-renderer.js','application/javascript; charset=utf-8'],
     '/ranked-setup.js':['ranked-setup.js','application/javascript; charset=utf-8'],
     '/achievement-catalog.js':['achievement-catalog.js','application/javascript; charset=utf-8'],
     '/achievement-rules.js':['achievement-rules.js','application/javascript; charset=utf-8'],
@@ -81,7 +84,8 @@ function createGameServer(options = {}) {
   };
   progressionHttp=createProgressionHttp({store:progression,enabled:persistent,send,broadcast});
   ranked=createRanked({store:progression,send,now:options.now,chooseMap:options.chooseRankedMap,maxMatches:options.maxRankedMatches});
-  campus=createCampus({store:progression,send,maxClients,now:options.now,canTrade:id=>!!id&&![...rooms.values()].some(r=>r.phase==='running'&&[...r.players.values()].some(p=>p.profile?.id===id))&&![...ranked.matches.values()].some(m=>m.players.some(p=>p.profile.id===id&&!p.result))});
+  const publicLobbies=createCampusMatchmaking({rooms,maxPlayers,now:options.now,maxReservations:maxClients});
+  campus=createCampus({store:progression,send,publicLobbies,maxClients,now:options.now,canTrade:id=>!!id&&![...rooms.values()].some(r=>r.phase==='running'&&[...r.players.values()].some(p=>p.profile?.id===id))&&![...ranked.matches.values()].some(m=>m.players.some(p=>p.profile.id===id&&!p.result))});
   const originAllowed = req => {
     if (!req.headers.origin) return false;
     try {
@@ -99,12 +103,12 @@ function createGameServer(options = {}) {
     const name = url.pathname==='/ranked'?'':url.searchParams.get('gameId') || '';
     const displayName=Array.from(String(url.searchParams.get('name')||'').replace(/[\u0000-\u001f\u007f<>]/g,'').replace(/\s+/g,' ').trim()).slice(0,20).join('');
     wss.handleUpgrade(req, socket, head, ws => {
-      wss.emit('connection', ws, name, displayName,{campus:url.pathname==='/campus',ranked:url.pathname==='/ranked',token:url.searchParams.get('token')||url.searchParams.get('profile')||'',title:url.searchParams.get('title')});
+      wss.emit('connection', ws, name, displayName,{campus:url.pathname==='/campus',ranked:url.pathname==='/ranked',token:url.searchParams.get('token')||url.searchParams.get('profile')||'',title:url.searchParams.get('title'),campusBuilding:url.searchParams.get('building')});
     });
   });
   wss.on('connection', async(ws, name, displayName, meta={}) => {ws.on('error',()=>{});try{await ready;
     ws.authToken=meta.token;ws.profile=await progression.profile(meta.token);if(ws.readyState!==WebSocket.OPEN)return;ws.equippedCosmetics=ws.profile?.cosmetics?.equipped||{skin:'default',head:'none'};ws.equippedTitle=meta.title==null?progression.titleName(ws.profile?.title):ACHIEVEMENTS.some(a=>a.id===meta.title&&!a.serverOnly&&!a.secret)||ws.profile?.titles.includes(meta.title)?progression.titleName(meta.title):'';
-    if(meta.campus){campus.join(ws,ws.profile,displayName);return;}
+    if(meta.campus){campus.join(ws,ws.profile,displayName,meta.campusBuilding);return;}
     if(meta.ranked){if(!persistent||!ws.profile){error(ws,'profile_required',persistent?'Create or recover your profile before ranked.':'Ranked requires persistent storage. See PERSISTENCE.md.');ws.close(1008);return;}if(clientCount()+ranked.sockets.size>=maxClients){ws.close(1013);return;}ranked.enqueue(ws,ws.profile);return;}
     if (!/^[A-Za-z0-9_-]{1,32}$/.test(name)) {
       error(ws, 'invalid_game_id', 'Use a room name with 1–32 letters, numbers, underscores or hyphens.'); ws.close(1008); return;
@@ -112,13 +116,14 @@ function createGameServer(options = {}) {
     if (clientCount()+ranked.sockets.size >= maxClients) { error(ws, 'server_full', 'The game server is full.'); ws.close(1013); return; }
     let room = rooms.get(name);
     if (!room) { room = { name, phase:'lobby', roles:new Set(), round:null, players: new Map(), nextId: 1, host: null }; rooms.set(name, room); }
+    if(room.publicBuilding&&room.phase!=='lobby'){error(ws,'round_active','This public lobby already started. Choose another group from campus.');ws.close(1008);return;}
     if (room.players.size >= maxPlayers) { error(ws, 'game_full', 'This room already has 16 students. Choose another room.'); ws.close(1008); return; }
     const id = room.nextId++;
     ws.playerId = id; ws.playerName=displayName||'Student '+id; ws.alive = true;
     let tokens = 120, lastRefill = Date.now();
     room.players.set(id, ws); room.host = Math.min(...room.players.keys());
     // Welcome is queued first, so a new student knows their identity before a snapshot arrives.
-    send(ws, { type: 'welcome', room:room.name, playerId: id, players: [...room.players.keys()],playerNames:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.playerName])),playerCosmetics:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.equippedCosmetics])),playerTitles:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.equippedTitle||''])) });
+    send(ws, { type: 'welcome', room:room.name, settings:room.publicBuilding?room.settings:null, publicBuilding:room.publicBuilding||null, playerId: id, players: [...room.players.keys()],playerNames:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.playerName])),playerCosmetics:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.equippedCosmetics])),playerTitles:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.equippedTitle||''])) });
     broadcast(room, { type: 'player_joined', playerId: id, name:ws.playerName,title:ws.equippedTitle||'',cosmetics:ws.equippedCosmetics }, ws);
     ws.on('pong', () => { ws.alive = true; });
     ws.on('error', () => {});
@@ -133,11 +138,12 @@ function createGameServer(options = {}) {
       if (!['ens_state', 'ens_input', 'ens_action', 'ens_sync', 'ens_room', 'ens_profile'].includes(message.type)) { error(ws, 'invalid_message', 'Unsupported game message.'); return; }
       if(message.type==='ens_state'&&(message.mapId==='ranked'||message.ranked)){error(ws,'matchmaking_only','Ranked is only available through the shared matchmaking queue.');return;}
       if(message.type==='ens_profile'){ws.profile=await progression.profile(meta.token);if(ws.readyState!==WebSocket.OPEN)return;ws.equippedCosmetics=ws.profile?.cosmetics?.equipped||{skin:'default',head:'none'};const title=message.titleId;if(typeof title==='string'){if(title===''||ws.profile?.titles.includes(title)||message.localAchievement===true&&ACHIEVEMENTS.some(a=>a.id===title&&!a.serverOnly&&!a.secret))ws.equippedTitle=progression.titleName(title);}else if(ws.profile)ws.equippedTitle=progression.titleName(ws.profile.title);broadcast(room,{type:'profile_changed',playerId:id,title:ws.equippedTitle||'',cosmetics:ws.equippedCosmetics});return;}
-      if(message.type==='ens_room'){if(id!==room.host){error(ws,'host_only','Only the host can rename the room.');return;}if(room.phase!=='lobby'){error(ws,'round_active','Return the group to the lobby before renaming.');return;}const next=message.room;if(typeof next!=='string'||!/^[A-Za-z0-9_-]{1,32}$/.test(next)){error(ws,'invalid_game_id','Invalid room name.');return;}if(next===room.name)return;if(rooms.has(next)){error(ws,'room_exists','That room name is already in use. Choose another name.');return;}rooms.delete(room.name);room.name=next;rooms.set(next,room);broadcast(room,{type:'room_renamed',room:next});return;}
+      if(message.type==='ens_room'){if(room.publicBuilding){error(ws,'public_room','Public lobbies use their building entrance. Create a room-name game from the menu for a private group.');return;}if(id!==room.host){error(ws,'host_only','Only the host can rename the room.');return;}if(room.phase!=='lobby'){error(ws,'round_active','Return the group to the lobby before renaming.');return;}const next=message.room;if(typeof next!=='string'||!/^[A-Za-z0-9_-]{1,32}$/.test(next)){error(ws,'invalid_game_id','Invalid room name.');return;}if(next===room.name)return;if(rooms.has(next)){error(ws,'room_exists','That room name is already in use. Choose another name.');return;}rooms.delete(room.name);room.name=next;rooms.set(next,room);broadcast(room,{type:'room_renamed',room:next});return;}
       if (message.type === 'ens_state' && (id !== room.host || message.host !== id)) { error(ws, 'host_only', 'Only the current host may publish game state.'); return; }
       if (message.type === 'ens_action' && !['start', 'restart', 'lobby', 'use', 'locker', 'elevator_button', 'drop_key', 'reenter'].includes(message.action)) { error(ws, 'invalid_message', 'Unsupported action.'); return; }
       if (message.type === 'ens_action' && ['start', 'restart', 'lobby'].includes(message.action) && id !== room.host) { error(ws, 'host_only', 'Only the host may start or restart the round.'); return; }
 
+      if(message.type==='ens_state'&&room.publicBuilding){if(message.mapId!==room.settings.map||!['key','puzzle'].includes(message.gameModeId)||!['easy','normal','hard','extreme'].includes(message.difficultyId)){error(ws,'public_settings','This public lobby belongs to its campus building. Leave it before changing buildings.');return;}room.settings.mode=message.gameModeId;room.settings.difficulty=message.difficultyId;}
       const verified = { ...message, playerId: id };if(message.type==='ens_state'&&Array.isArray(message.players))verified.players=message.players.map(a=>{if(!Array.isArray(a))return a;const row=[...a];row[36]=room.players.get(row[0])?.equippedCosmetics||{skin:'default',head:'none'};return row;});
       if (message.type === 'ens_state') {progressionHttp.observe(room,message).catch(()=>console.warn('A completed casual run could not be saved.'));room.phase=message.phase;room.round=message.round;if(Array.isArray(message.players))room.roles=new Set(message.players.filter(a=>Array.isArray(a)&&a[30]?.spectator).map(a=>a[0]));broadcast(room, verified, ws);}
       else if (room.host !== id) send(room.players.get(room.host), verified);

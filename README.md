@@ -1,15 +1,15 @@
-# CU Escape — 1.4.8
+# CU Escape — 1.4.9
 
 A browser escape game with ENS and SBCC, Key and Puzzle modes, desktop/mobile controls, solo play, room-name multiplayer, saved accounts and four-student Ranked matchmaking.
 
-Read [UPDATE_1.4.8.md](UPDATE_1.4.8.md) for independent result retries, end-of-game achievement updates and automatic publication of older saved wins. This archive has not been deployed by this chat. The Flex rewards and achievement backpay from 1.4.6 and rendering fixes from 1.4.5 remain.
+Read [UPDATE_1.4.9.md](UPDATE_1.4.9.md) for the walkable campus, public building lobbies and SSC patio trading. This archive has not been deployed by this chat. The Flex rewards and achievement backpay from 1.4.6 and rendering fixes from 1.4.5 remain.
 
 ## Install or update
 
 1. Extract the ZIP. Replace all corresponding files in the existing linked GitHub repository, including the new `campus.cjs`, `public/campus.js` and `public/ranked-setup.js`.
 2. Commit to the branch Render deploys. Wait for the deployment to finish.
 3. Keep the existing `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` environment variables and database. New tables initialize automatically; accounts, rank, achievements and purchases stay intact.
-4. Have everyone refresh. Both editions use version **1.4.8 / protocol 38**. Old open tabs cannot join an updated round.
+4. Have everyone refresh. Both editions use version **1.4.9 / protocol 39**. Old open tabs cannot join an updated round.
 
 See [DEPLOY.md](DEPLOY.md) for hosting and [PERSISTENCE.md](PERSISTENCE.md) for Turso and backups. Use one Node service instance: its real-time rooms, shared matchmaking and campus world are held in that process. Multi-instance hosting requires a shared real-time broker.
 
@@ -24,7 +24,7 @@ Visit `http://localhost:3000`; `/desktop` and `/mobile` choose the controls. `np
 
 ## Play
 
-Solo starts immediately. For standard multiplayer, students enter the same room name; the host's map, mode and difficulty are loaded automatically. Everyone waits in the Cedar Lake-inspired shared lobby until that room's host starts. Settings can change between rounds without requiring a new room name.
+Solo starts immediately. For standard multiplayer, students enter the same room name; the host's map, mode and difficulty are loaded automatically. Everyone waits in the shared 3D campus, starting beside Cedar Lake, until that room's host starts. Use Explore Campus / Find Players from the menu to meet students without a room name. Walk to an ENS or SBCC entrance and press F / Enter to join an open public group or create one. Other labeled buildings display Coming soon. Public groups stay associated with their building; the host can choose mode/difficulty and starts the game. Private room-name groups never appear in the public directory. The campus map starts near the lake, with a full-campus view and a searchable building directory. Settings can change between rounds without requiring a new room name.
 
 Ranked has no room code. It finds **three other students** at your exact rank and level for **four total**, chooses ENS or SBCC randomly, and runs Key Mode / Hard with private keys and personal locks. See the release notes for Diamond+ start selection and immediate elimination on capture.
 
@@ -65,6 +65,6 @@ Trading requires two signed-in students seated at the same table, up to four ite
 
 ## Performance and verification
 
-Spectator mode and its continuous camera-upload stream are disabled. The lake pauses the building renderer, uses throttled nearby-player messages, and closes its connection and animation before a match. Navigation caches static checks, with dynamic doors/layouts invalidating the cache. Active snapshots target up to 20 Hz while local input prediction remains responsive. Floor/ceiling drawing is batched, geometry/depth buffers are reused, and moving render paths have reproducible benchmark coverage. Host transfer preserves round state and continues held movement.
+Spectator mode and its continuous camera-upload stream are disabled. The campus pauses the building renderer, uses throttled nearby-player messages, and closes its connection, animation and GPU buffers before a match. Campus geometry uploads once, draws at up to 30 FPS with capped resolution and distance culling, and has a slower software fallback. Trading tables are on the SSC lakeside patio. See CAMPUS_SOURCES.md for measured floor areas, map/photo references and the estimated dimensions. Navigation caches static checks, with dynamic doors/layouts invalidating the cache. Active snapshots target up to 20 Hz while local input prediction remains responsive. Floor/ceiling drawing is batched, geometry/depth buffers are reused, and moving render paths have reproducible benchmark coverage. Host transfer preserves round state and continues held movement.
 
 Automated tests cover both device editions, real WebSocket groups, host changes, personal inventories, shared exploration, furniture/stairs/elevators, Ranked matching, Diamond preparation, rewards, automatic boards, account achievements, cosmetic ownership and local/Turso transactions. Real-world Wi-Fi, server capacity and physical phone performance still need checking on the deployed game.

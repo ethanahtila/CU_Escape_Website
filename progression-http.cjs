@@ -6,7 +6,7 @@ function createProgressionHttp({store,enabled,send,broadcast}){
  function json(res,status,data){res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));}
  async function body(req){let text='';for await(const chunk of req){text+=chunk;if(text.length>8192)throw Error('Request too large');}return text?JSON.parse(text):{};}
  async function handle(req,res,url){if(!url.pathname.startsWith('/api/'))return false;
-  if(url.pathname==='/api/status'){json(res,200,{persistent:enabled,timezone:'America/New_York',leaderboards:32,rankedBoards:1,version:'1.4.8',protocol:38});return true;}
+  if(url.pathname==='/api/status'){json(res,200,{persistent:enabled,timezone:'America/New_York',leaderboards:32,rankedBoards:1,version:'1.4.9',protocol:39});return true;}
   if(!enabled){json(res,503,{error:'Permanent records and ranked require persistent server storage. See PERSISTENCE.md in the update package.'});return true;}
   const key=(req.socket.remoteAddress||'local')+':'+crypto.createHash('sha256').update(token(req)).digest('hex'),window=Math.floor(Date.now()/60000),rate=limits.get(key);if(!rate||rate.window!==window)limits.set(key,{window,n:1});else if(++rate.n>120){json(res,429,{error:'Please try again shortly.'});return true;}
   const receivedAt=Date.now();try{const auth=token(req),input=req.method==='POST'?await body(req):{};if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)throw Error('Use this game website to change your profile.');const perform=async()=>{let result;
