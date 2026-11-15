@@ -28,7 +28,7 @@ function createGameServer(options = {}) {
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ws: wss:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' ws: wss: https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com; frame-src https://www.googletagmanager.com; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"
   };
   const files = {
     '/': ['index.html', 'text/html; charset=utf-8'],
@@ -37,6 +37,7 @@ function createGameServer(options = {}) {
     '/mobile': ['mobile.html', 'text/html; charset=utf-8'],
     '/favicon.svg': ['favicon.svg', 'image/svg+xml'],
     '/robots.txt': ['robots.txt', 'text/plain; charset=utf-8'],
+    '/analytics.js':['analytics.js','application/javascript; charset=utf-8'],
     '/progression.js':['progression.js','application/javascript; charset=utf-8'],
     '/campus.js':['campus.js','application/javascript; charset=utf-8'],
     '/campus-world.js':['campus-world.js','application/javascript; charset=utf-8'],

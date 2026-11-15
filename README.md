@@ -1,15 +1,15 @@
-# CU Escape — 1.5.0
+# CU Escape — 1.5.1
 
 A browser escape game with ENS and SBCC, Key and Puzzle modes, desktop/mobile controls, solo play, room-name multiplayer, saved accounts and four-student Ranked matchmaking.
 
-Read [UPDATE_1.5.0.md](UPDATE_1.5.0.md) for the SSC clearance repair and photo-guided terrain grades. This archive has not been deployed by this chat. The Flex rewards and achievement backpay from 1.4.6 and rendering fixes from 1.4.5 remain.
+Read [UPDATE_1.5.1.md](UPDATE_1.5.1.md) for site-wide Google Tag Manager installation and usage events. The SSC clearance repair and photo-guided terrain from 1.5.0 remain. This archive has not been deployed by this chat. The Flex rewards and achievement backpay from 1.4.6 and rendering fixes from 1.4.5 remain.
 
 ## Install or update
 
 1. Extract the ZIP. Replace all corresponding files in the existing linked GitHub repository, including the new `campus.cjs`, `public/campus.js` and `public/ranked-setup.js`.
 2. Commit to the branch Render deploys. Wait for the deployment to finish.
 3. Keep the existing `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` environment variables and database. New tables initialize automatically; accounts, rank, achievements and purchases stay intact.
-4. Have everyone refresh. Both editions use version **1.5.0 / protocol 40**. Old open tabs cannot join an updated round.
+4. Have everyone refresh. Both editions use version **1.5.1 / protocol 41**. Old open tabs cannot join an updated round.
 
 See [DEPLOY.md](DEPLOY.md) for hosting and [PERSISTENCE.md](PERSISTENCE.md) for Turso and backups. Use one Node service instance: its real-time rooms, shared matchmaking and campus world are held in that process. Multi-instance hosting requires a shared real-time broker.
 
@@ -68,3 +68,7 @@ Trading requires two signed-in students seated at the same table, up to four ite
 Spectator mode and its continuous camera-upload stream are disabled. The campus pauses the building renderer, uses throttled nearby-player messages, and closes its connection, animation and GPU buffers before a match. Campus geometry uploads once, draws at up to 30 FPS with capped resolution and distance culling, and has a slower software fallback. Trading tables are on the SSC lakeside patio. See CAMPUS_SOURCES.md for measured floor areas, map/photo references and the estimated dimensions. Navigation caches static checks, with dynamic doors/layouts invalidating the cache. Active snapshots target up to 20 Hz while local input prediction remains responsive. Floor/ceiling drawing is batched, geometry/depth buffers are reused, and moving render paths have reproducible benchmark coverage. Host transfer preserves round state and continues held movement.
 
 Automated tests cover both device editions, real WebSocket groups, host changes, personal inventories, shared exploration, furniture/stairs/elevators, Ranked matching, Diamond preparation, rewards, automatic boards, account achievements, cosmetic ownership and local/Turso transactions. Real-world Wi-Fi, server capacity and physical phone performance still need checking on the deployed game.
+
+## Visitor analytics
+
+The supplied Google Tag Manager container **GTM-KNS96ZMB** is installed once in the entry, desktop and mobile pages. All in-page game services share that container. See [ANALYTICS_SETUP.md](ANALYTICS_SETUP.md) to connect/verify a Google Analytics destination and publish the container. Visitor measurement does not require a game account. Service-section and match events are queued in the data layer and can be forwarded using the documented custom-event trigger. This package does not include access to, or publish changes in, your Google account.

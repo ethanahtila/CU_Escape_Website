@@ -1,4 +1,4 @@
-# Turso storage — update 1.5.0
+# Turso storage — update 1.5.1
 
 The game now connects directly to an external Turso/libSQL database. With this option, Render runs the game and multiplayer server; Turso stores accounts, password hashes, sessions, achievements, selected titles, ranks, leaderboards, wallets, permanent cosmetic ownership, equipped looks and personal daily shops. A paid Render disk is not required for Turso mode. The connection is server-side; database credentials never belong in HTML or GitHub.
 
@@ -68,3 +68,5 @@ Browser result retries are independent per game. A permanently invalid result st
 Casual records already rely on client/host simulation. Their reported durations must be finite and between one second and 24 hours, with immutable session categories and profile ownership. They are no longer compared to the server's elapsed wall clock, which cannot verify a client simulation and can reject valid results after clock changes. Ranked continues to use server-controlled simulation/timing.
 
 Update 1.5.0 changes outdoor terrain and circulation only. Keep the existing database, credentials, accounts and reward ledgers; no new database migration is needed for campus heights.
+
+Update 1.5.1 adds browser analytics only. Keep the existing Turso configuration and saved profiles; no database migration or account reset is needed. Analytics runs in the web pages, not as scripts in SQLite/Turso, WebSocket or JSON API responses.
