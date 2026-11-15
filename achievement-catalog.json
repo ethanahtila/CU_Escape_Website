@@ -6,7 +6,9 @@
     "condition": {
       "type": "wins",
       "min": 1
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "speed",
@@ -16,7 +18,9 @@
       "type": "win",
       "difficulty": "extreme",
       "maxTime": 300
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "clean",
@@ -25,7 +29,9 @@
     "condition": {
       "type": "win",
       "maxCaptures": 0
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "puzzle",
@@ -34,7 +40,9 @@
     "condition": {
       "type": "win",
       "mode": "puzzle"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "team",
@@ -43,7 +51,9 @@
     "condition": {
       "type": "win",
       "minPlayers": 3
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "first",
@@ -54,7 +64,9 @@
       "stat": "rankWins",
       "min": 1
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "ten",
@@ -63,7 +75,9 @@
     "condition": {
       "type": "wins",
       "min": 10
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "wins2",
@@ -72,7 +86,9 @@
     "condition": {
       "type": "wins",
       "min": 2
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "wins3",
@@ -81,7 +97,9 @@
     "condition": {
       "type": "wins",
       "min": 3
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "wins5",
@@ -90,7 +108,9 @@
     "condition": {
       "type": "wins",
       "min": 5
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "wins20",
@@ -99,7 +119,9 @@
     "condition": {
       "type": "wins",
       "min": 20
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "wins25",
@@ -108,7 +130,9 @@
     "condition": {
       "type": "wins",
       "min": 25
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "wins50",
@@ -117,7 +141,9 @@
     "condition": {
       "type": "wins",
       "min": 50
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "wins75",
@@ -126,7 +152,9 @@
     "condition": {
       "type": "wins",
       "min": 75
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "wins100",
@@ -135,7 +163,9 @@
     "condition": {
       "type": "wins",
       "min": 100
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "map_ens",
@@ -144,7 +174,9 @@
     "condition": {
       "type": "win",
       "map": "ens"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "map_berg",
@@ -153,7 +185,9 @@
     "condition": {
       "type": "win",
       "map": "berg"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "key_win",
@@ -162,7 +196,9 @@
     "condition": {
       "type": "win",
       "mode": "key"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "diff_easy",
@@ -178,7 +214,9 @@
         "rescues": 3
       }
     },
-    "secret": true
+    "secret": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "diff_normal",
@@ -187,7 +225,9 @@
     "condition": {
       "type": "win",
       "difficulty": "normal"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "diff_hard",
@@ -196,7 +236,9 @@
     "condition": {
       "type": "win",
       "difficulty": "hard"
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "diff_extreme",
@@ -205,7 +247,9 @@
     "condition": {
       "type": "win",
       "difficulty": "extreme"
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "ens_key",
@@ -215,7 +259,9 @@
       "type": "win",
       "map": "ens",
       "mode": "key"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "ens_puzzle",
@@ -225,7 +271,9 @@
       "type": "win",
       "map": "ens",
       "mode": "puzzle"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "berg_key",
@@ -235,7 +283,9 @@
       "type": "win",
       "map": "berg",
       "mode": "key"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "berg_puzzle",
@@ -245,7 +295,9 @@
       "type": "win",
       "map": "berg",
       "mode": "puzzle"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "ens_easy",
@@ -265,7 +317,9 @@
         "lockerUses"
       ]
     },
-    "secret": true
+    "secret": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "ens_normal",
@@ -275,7 +329,9 @@
       "type": "win",
       "map": "ens",
       "difficulty": "normal"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "ens_hard",
@@ -285,7 +341,9 @@
       "type": "win",
       "map": "ens",
       "difficulty": "hard"
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "ens_extreme",
@@ -295,7 +353,9 @@
       "type": "win",
       "map": "ens",
       "difficulty": "extreme"
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "berg_easy",
@@ -315,7 +375,9 @@
         "lockerUses"
       ]
     },
-    "secret": true
+    "secret": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "berg_normal",
@@ -325,7 +387,9 @@
       "type": "win",
       "map": "berg",
       "difficulty": "normal"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "berg_hard",
@@ -335,7 +399,9 @@
       "type": "win",
       "map": "berg",
       "difficulty": "hard"
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "berg_extreme",
@@ -345,7 +411,9 @@
       "type": "win",
       "map": "berg",
       "difficulty": "extreme"
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "key_easy",
@@ -364,7 +432,9 @@
         "ventUses"
       ]
     },
-    "secret": true
+    "secret": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "key_normal",
@@ -374,7 +444,9 @@
       "type": "win",
       "mode": "key",
       "difficulty": "normal"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "key_hard",
@@ -384,7 +456,9 @@
       "type": "win",
       "mode": "key",
       "difficulty": "hard"
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "key_extreme",
@@ -394,7 +468,9 @@
       "type": "win",
       "mode": "key",
       "difficulty": "extreme"
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "puzzle_easy",
@@ -410,7 +486,9 @@
       "maxCaptures": 0,
       "allSafe": true
     },
-    "secret": true
+    "secret": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "puzzle_normal",
@@ -420,7 +498,9 @@
       "type": "win",
       "mode": "puzzle",
       "difficulty": "normal"
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "puzzle_hard",
@@ -430,7 +510,9 @@
       "type": "win",
       "mode": "puzzle",
       "difficulty": "hard"
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "puzzle_extreme",
@@ -440,7 +522,9 @@
       "type": "win",
       "mode": "puzzle",
       "difficulty": "extreme"
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "solo",
@@ -450,7 +534,9 @@
       "type": "win",
       "minPlayers": 1,
       "maxPlayers": 1
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "duo",
@@ -460,7 +546,9 @@
       "type": "win",
       "minPlayers": 2,
       "maxPlayers": 2
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "four",
@@ -470,7 +558,9 @@
       "type": "win",
       "minPlayers": 4,
       "maxPlayers": 4
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "five",
@@ -480,7 +570,9 @@
       "type": "win",
       "minPlayers": 5,
       "maxPlayers": 16
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "fast600",
@@ -489,7 +581,9 @@
     "condition": {
       "type": "win",
       "maxTime": 600
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "fast420",
@@ -498,7 +592,9 @@
     "condition": {
       "type": "win",
       "maxTime": 420
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "fast240",
@@ -518,7 +614,9 @@
         "lockerUses"
       ]
     },
-    "secret": true
+    "secret": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "fast180",
@@ -539,7 +637,9 @@
         "elevatorRides"
       ]
     },
-    "secret": true
+    "secret": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "fast120",
@@ -560,7 +660,9 @@
         "elevatorRides"
       ]
     },
-    "secret": true
+    "secret": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "clean_ens",
@@ -570,7 +672,9 @@
       "type": "win",
       "map": "ens",
       "maxCaptures": 0
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "clean_berg",
@@ -580,7 +684,9 @@
       "type": "win",
       "map": "berg",
       "maxCaptures": 0
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "clean_easy",
@@ -600,7 +706,9 @@
         "lockerUses"
       ]
     },
-    "secret": true
+    "secret": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "clean_normal",
@@ -613,7 +721,9 @@
       "maxTime": 420,
       "minCaptures": 3
     },
-    "secret": true
+    "secret": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "clean_hard",
@@ -623,7 +733,9 @@
       "type": "win",
       "difficulty": "hard",
       "maxCaptures": 0
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "clean_extreme",
@@ -633,7 +745,9 @@
       "type": "win",
       "difficulty": "extreme",
       "maxCaptures": 0
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "clean_key",
@@ -643,7 +757,9 @@
       "type": "win",
       "mode": "key",
       "maxCaptures": 0
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "clean_puzzle",
@@ -653,7 +769,9 @@
       "type": "win",
       "mode": "puzzle",
       "maxCaptures": 0
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "solo_ens_hard",
@@ -665,7 +783,9 @@
       "difficulty": "hard",
       "minPlayers": 1,
       "maxPlayers": 1
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "solo_ens_extreme",
@@ -677,7 +797,9 @@
       "difficulty": "extreme",
       "minPlayers": 1,
       "maxPlayers": 1
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "solo_berg_hard",
@@ -689,7 +811,9 @@
       "difficulty": "hard",
       "minPlayers": 1,
       "maxPlayers": 1
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "solo_berg_extreme",
@@ -701,7 +825,9 @@
       "difficulty": "extreme",
       "minPlayers": 1,
       "maxPlayers": 1
-    }
+    },
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "keysCollected1",
@@ -712,7 +838,9 @@
       "stats": {
         "keysCollected": 1
       }
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "keysUsed4",
@@ -723,7 +851,9 @@
       "stats": {
         "keysUsed": 4
       }
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "drops1",
@@ -734,7 +864,9 @@
       "stats": {
         "drops": 1
       }
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "ventUses1",
@@ -745,7 +877,9 @@
       "stats": {
         "ventUses": 1
       }
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "ventUses3",
@@ -756,7 +890,9 @@
       "stats": {
         "ventUses": 3
       }
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "lockerUses1",
@@ -767,7 +903,9 @@
       "stats": {
         "lockerUses": 1
       }
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "lockerUses3",
@@ -778,7 +916,9 @@
       "stats": {
         "lockerUses": 3
       }
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "jumps10",
@@ -789,7 +929,9 @@
       "stats": {
         "jumps": 10
       }
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "rescues1",
@@ -800,7 +942,9 @@
       "stats": {
         "rescues": 1
       }
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "elevatorRides1",
@@ -811,7 +955,9 @@
       "stats": {
         "elevatorRides": 1
       }
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "stairsUsed4",
@@ -822,7 +968,9 @@
       "stats": {
         "stairsUsed": 4
       }
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "crouchSeconds10",
@@ -833,7 +981,9 @@
       "stats": {
         "crouchSeconds": 10
       }
-    }
+    },
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "career_ventUses",
@@ -843,7 +993,9 @@
       "type": "career",
       "stat": "ventUses",
       "min": 10
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "career_lockerUses",
@@ -853,7 +1005,9 @@
       "type": "career",
       "stat": "lockerUses",
       "min": 10
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "career_jumps",
@@ -863,7 +1017,9 @@
       "type": "career",
       "stat": "jumps",
       "min": 100
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "career_rescues",
@@ -873,7 +1029,9 @@
       "type": "career",
       "stat": "rescues",
       "min": 5
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "career_elevatorRides",
@@ -883,7 +1041,9 @@
       "type": "career",
       "stat": "elevatorRides",
       "min": 10
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "career_keysCollected",
@@ -893,7 +1053,9 @@
       "type": "career",
       "stat": "keysCollected",
       "min": 25
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "career_keysUsed",
@@ -903,7 +1065,9 @@
       "type": "career",
       "stat": "keysUsed",
       "min": 25
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "career_crouchSeconds",
@@ -913,7 +1077,9 @@
       "type": "career",
       "stat": "crouchSeconds",
       "min": 120
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "career_stairsUsed",
@@ -923,7 +1089,9 @@
       "type": "career",
       "stat": "stairsUsed",
       "min": 20
-    }
+    },
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "rank_reach1",
@@ -933,7 +1101,9 @@
       "type": "rankIndex",
       "min": 1
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "rank_reach2",
@@ -943,7 +1113,9 @@
       "type": "rankIndex",
       "min": 2
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "rank_reach3",
@@ -953,7 +1125,9 @@
       "type": "rankIndex",
       "min": 3
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "rank_reach4",
@@ -963,7 +1137,9 @@
       "type": "rankIndex",
       "min": 4
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "rank_reach5",
@@ -973,7 +1149,9 @@
       "type": "rankIndex",
       "min": 5
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "rank_reach6",
@@ -983,7 +1161,9 @@
       "type": "rankIndex",
       "min": 6
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "rank_reach7",
@@ -993,7 +1173,9 @@
       "type": "rankIndex",
       "min": 7
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "rank_reach8",
@@ -1003,7 +1185,9 @@
       "type": "rankIndex",
       "min": 8
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "rank_reach9",
@@ -1013,7 +1197,9 @@
       "type": "rankIndex",
       "min": 9
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "rank_finish1",
@@ -1024,7 +1210,9 @@
       "stat": "rankFinishes",
       "min": 1
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "rank_finish5",
@@ -1035,7 +1223,9 @@
       "stat": "rankFinishes",
       "min": 5
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "rank_finish10",
@@ -1046,7 +1236,9 @@
       "stat": "rankFinishes",
       "min": 10
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "rank_finish25",
@@ -1057,7 +1249,9 @@
       "stat": "rankFinishes",
       "min": 25
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "rank_wins5",
@@ -1068,7 +1262,9 @@
       "stat": "rankWins",
       "min": 5
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "rank_wins10",
@@ -1079,7 +1275,9 @@
       "stat": "rankWins",
       "min": 10
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "rank_wins25",
@@ -1090,7 +1288,9 @@
       "stat": "rankWins",
       "min": 25
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "economy_balance_100",
@@ -1101,7 +1301,9 @@
       "stat": "balance",
       "min": 100
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "economy_balance_1000",
@@ -1112,7 +1314,9 @@
       "stat": "balance",
       "min": 1000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "economy_balance_10000",
@@ -1123,7 +1327,9 @@
       "stat": "balance",
       "min": 10000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "economy_balance_100000",
@@ -1134,7 +1340,9 @@
       "stat": "balance",
       "min": 100000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "economy_balance_1000000",
@@ -1145,7 +1353,9 @@
       "stat": "balance",
       "min": 1000000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "economy_lifetime_100",
@@ -1156,7 +1366,9 @@
       "stat": "lifetime",
       "min": 100
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "economy_lifetime_1000",
@@ -1167,7 +1379,9 @@
       "stat": "lifetime",
       "min": 1000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "economy_lifetime_10000",
@@ -1178,7 +1392,9 @@
       "stat": "lifetime",
       "min": 10000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "economy_lifetime_100000",
@@ -1189,7 +1405,9 @@
       "stat": "lifetime",
       "min": 100000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "economy_lifetime_1000000",
@@ -1200,7 +1418,9 @@
       "stat": "lifetime",
       "min": 1000000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "economy_spent_100",
@@ -1211,7 +1431,9 @@
       "stat": "spent",
       "min": 100
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "economy_spent_1000",
@@ -1222,7 +1444,9 @@
       "stat": "spent",
       "min": 1000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "economy_spent_10000",
@@ -1233,7 +1457,9 @@
       "stat": "spent",
       "min": 10000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "economy_spent_100000",
@@ -1244,7 +1470,9 @@
       "stat": "spent",
       "min": 100000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "economy_spent_1000000",
@@ -1255,7 +1483,9 @@
       "stat": "spent",
       "min": 1000000
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "economy_owned_1",
@@ -1266,7 +1496,9 @@
       "stat": "owned",
       "min": 1
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 50,
+    "rewardTier": "easy"
   },
   {
     "id": "economy_owned_5",
@@ -1277,7 +1509,9 @@
       "stat": "owned",
       "min": 5
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "economy_owned_10",
@@ -1288,7 +1522,9 @@
       "stat": "owned",
       "min": 10
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "economy_owned_25",
@@ -1299,7 +1535,9 @@
       "stat": "owned",
       "min": 25
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "economy_owned_50",
@@ -1310,7 +1548,9 @@
       "stat": "owned",
       "min": 50
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   },
   {
     "id": "economy_skins_10",
@@ -1321,7 +1561,9 @@
       "stat": "skins",
       "min": 10
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "economy_headgear_10",
@@ -1332,7 +1574,9 @@
       "stat": "headgear",
       "min": 10
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 100,
+    "rewardTier": "difficult"
   },
   {
     "id": "economy_afterlight",
@@ -1342,6 +1586,8 @@
       "type": "economyItem",
       "item": "afterlight"
     },
-    "serverOnly": true
+    "serverOnly": true,
+    "reward": 150,
+    "rewardTier": "mastery"
   }
 ]
