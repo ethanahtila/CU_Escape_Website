@@ -1,15 +1,15 @@
-# CU Escape — 1.4.6
+# CU Escape — 1.4.8
 
 A browser escape game with ENS and SBCC, Key and Puzzle modes, desktop/mobile controls, solo play, room-name multiplayer, saved accounts and four-student Ranked matchmaking.
 
-Read [UPDATE_1.4.6.md](UPDATE_1.4.6.md) for this release's controls, performance changes, waiting lobby, trading, records and Ranked rules. This archive has not been deployed by this chat. Update 1.4.6 triples Ranked Flex income, doubles regular-win income and pays one-time 50/100/150 Flex Dollar achievement rewards, including previous unlocks. The 1.4.5 rendering fixes remain.
+Read [UPDATE_1.4.8.md](UPDATE_1.4.8.md) for independent result retries, end-of-game achievement updates and automatic publication of older saved wins. This archive has not been deployed by this chat. The Flex rewards and achievement backpay from 1.4.6 and rendering fixes from 1.4.5 remain.
 
 ## Install or update
 
 1. Extract the ZIP. Replace all corresponding files in the existing linked GitHub repository, including the new `campus.cjs`, `public/campus.js` and `public/ranked-setup.js`.
 2. Commit to the branch Render deploys. Wait for the deployment to finish.
 3. Keep the existing `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` environment variables and database. New tables initialize automatically; accounts, rank, achievements and purchases stay intact.
-4. Have everyone refresh. Both editions use version **1.4.6 / protocol 36**. Old open tabs cannot join an updated round.
+4. Have everyone refresh. Both editions use version **1.4.8 / protocol 38**. Old open tabs cannot join an updated round.
 
 See [DEPLOY.md](DEPLOY.md) for hosting and [PERSISTENCE.md](PERSISTENCE.md) for Turso and backups. Use one Node service instance: its real-time rooms, shared matchmaking and campus world are held in that process. Multi-instance hosting requires a shared real-time broker.
 
@@ -51,7 +51,7 @@ Sign up with a unique username and a password of 12–128 characters. Usernames 
 
 The menu includes **Achievements & Titles**, **My Rank**, **Leaderboards**, **Store**, **Skins & Headgear**, and **Trading Hall**. All 123 achievements remain, including ten secret challenges; each now pays 50, 100 or 150 Flex Dollars once, with earlier unlocks automatically credited when the saved profile loads. No reset is needed; earned rank and achievement titles share one equipped slot. My Rank shows progress to the next level, not merely the next rank. Guest achievements remain on the current browser; server progression requires persistent storage.
 
-Winning casual games are saved automatically to their daily and all-time boards. There are 32 casual categories (two buildings × two modes × four difficulties × two scopes), each displaying the top 50 and your own placement. Ranked has one season leaderboard. Daily boards and shops reset at midnight `America/New_York`, including daylight-saving changes. Ranked seasons reset on the 15th at midnight there. All-time casual results never reset automatically. Casual records rely on the client/host and are marked community verified; Ranked simulation and results are server-controlled.
+Completed casual games automatically check achievement progress; wins also save to their matching daily and all-time boards. Losses never enter timed escape boards or earn a regular win pool. One failed result cannot block later games, and older stored unpublished wins are made visible automatically. The menu shows whether the client and record server versions match. Profile shows any pending results and errors, with a retry control. Team results finalize when the whole team escapes. Completed saves retry across round changes and browser reloads; persisted server jobs recover after a restart. Keep browser storage and the existing server database. Profile shows one overall Best Run across saved casual escapes and newly recorded Ranked escapes; older Ranked times were not stored. There are 32 casual categories (two buildings × two modes × four difficulties × two scopes), each displaying the top 50 and your own placement. Ranked has one season leaderboard. Daily boards and shops reset at midnight `America/New_York`, including daylight-saving changes. Ranked seasons reset on the 15th at midnight there. All-time casual results never reset automatically. Casual records rely on the client/host and are marked community verified; Ranked simulation and results are server-controlled.
 
 Ranks are Wood, Bronze, Silver, Gold, Diamond, Mythic, Legendary, Masters, Platinum and Pro, with five 150-credit levels per rank. Base escape rewards are +50–75 / +20–45 / −5–20 / −25–45 by place. Gains gradually reduce and losses increase from Diamond upward. A reached rank protects its first level from demotion. Mythic has an eleven-minute limit, decreasing by one minute per rank to seven at Pro. Captures, disconnects and timeouts eliminate a student; no loss can spend Flex Dollars.
 

@@ -1,4 +1,4 @@
-# Turso storage — update 1.4.6
+# Turso storage — update 1.4.8
 
 The game now connects directly to an external Turso/libSQL database. With this option, Render runs the game and multiplayer server; Turso stores accounts, password hashes, sessions, achievements, selected titles, ranks, leaderboards, wallets, permanent cosmetic ownership, equipped looks and personal daily shops. A paid Render disk is not required for Turso mode. The connection is server-side; database credentials never belong in HTML or GitHub.
 
@@ -50,3 +50,19 @@ Update 1.4.6 also creates completed-round achievement deduplication and cosmetic
 Version 1.4.6 adds `currency_fractions` and `casual_currency_awards` automatically. Existing integer wallet balances keep their value. Equal team shares use exact fractional units; no account reset or manual database upload is needed.
 
 Version 1.4.6 creates `achievement_currency_awards` automatically. Previous achievements are credited once when that profile loads; keep the existing database and account identities. Payments do not reset with ranked seasons.
+
+## Update 1.4.7: recoverable completed runs
+
+The game creates `run_sessions`, `completed_run_jobs` and `ranked_escape_runs` automatically, plus indexes for profile best times. Keep the same database and account identities. Persistent start tickets survive later rounds and server restarts. Completed multiplayer results are journaled for all winners before individual processing; queued results retry without duplicating records or payouts. The journal freezes the completion day so a delayed save does not move a run into the next daily board.
+
+The browser keeps unfinished solo submissions in local storage, bound to the saved profile. Reopening the game and signing in to that account retries them. Clearing browser data before a solo result reaches the server removes that browser-only queue. Server recovery requires Turso or a persistent local SQLite disk, as before.
+
+Best Run uses the fastest existing casual record or newly recorded successful Ranked escape. Ranked captures and non-escape placements do not count. Earlier Ranked times and casual results that never reached storage cannot be reconstructed. Ranked time records do not enter the casual leaderboards. No match rates, achievements, cosmetics or balances are reset.
+
+## Update 1.4.8: independent retries and automatic records
+
+A one-time `progression_migrations` entry publishes previously stored unpublished wins. It preserves original completion dates, record IDs, wallets and reward ledgers. Historical wins appear in All-time and, only when their stored day is today, Daily. It does not fabricate results that never reached the server or pay another win reward. No manual database edit is required.
+
+Browser result retries are independent per game. A permanently invalid result stays visible in Profile for inspection/retry and cannot block newer results. Expired run tickets are reacquired for the same profile and round. Completed losses use the existing result journal to award applicable career achievements exactly once, without win rewards or a timed escape record.
+
+Casual records already rely on client/host simulation. Their reported durations must be finite and between one second and 24 hours, with immutable session categories and profile ownership. They are no longer compared to the server's elapsed wall clock, which cannot verify a client simulation and can reject valid results after clock changes. Ranked continues to use server-controlled simulation/timing.

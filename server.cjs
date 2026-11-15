@@ -160,7 +160,7 @@ function createGameServer(options = {}) {
   }, options.heartbeatMs || 15000);
   heartbeat.unref();
   async function close() {
-    shuttingDown = true; clearInterval(heartbeat);await ranked.close();campus.close();progressionHttp.close();
+    shuttingDown = true; clearInterval(heartbeat);await ranked.close();campus.close();await progressionHttp.close();
     for (const ws of wss.clients) ws.terminate();
     await new Promise(resolve => wss.close(resolve));
     if (server.listening) await new Promise(resolve => server.close(resolve));await progression.close();

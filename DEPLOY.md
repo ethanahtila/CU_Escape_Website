@@ -2,7 +2,7 @@
 
 The project is configured for a Node.js 24 web service and a same-origin secure WebSocket relay. The game is not publicly live until it is deployed to a hosting account.
 
-For version 1.4.6 saved accounts, ranked and leaderboards, read **PERSISTENCE.md**. Add both `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to the existing service environment to use external storage without a paid Render disk. The game initializes its tables automatically. Local SQLite remains an alternative with persistent disk storage.
+For version 1.4.7 saved accounts, ranked and leaderboards, read **PERSISTENCE.md**. Add both `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to the existing service environment to use external storage without a paid Render disk. The game initializes its tables automatically. Local SQLite remains an alternative with persistent disk storage.
 
 ## Render deployment (no custom domain required)
 
@@ -34,8 +34,10 @@ Open `http://localhost:3000`. Local development uses `ws://`; production HTTPS a
 
 This package contains the game, Node server, and WSS relay, but it does not include a hosting account, GitHub repository, domain, or deployed public URL. Those must be created/authorized by the site owner. A static website host alone cannot run the multiplayer relay.
 
-## Updating the existing live service to 1.1.3
+## Updating the existing live service to 1.4.7
 
-Replace the deployed repository contents with this package and redeploy the existing service; keep its current URL and hosting settings. This archive keeps package.json and public/ at the ZIP root. Everyone should refresh the game after deployment, because multiplayer protocol 22 requires matching clients. A deployment restarts the relay and ends current connections, so update between rounds. No live deployment was performed while preparing this archive.
+Replace all corresponding repository files with this package, including both HTML clients, progression scripts and server modules. Commit to the linked deployment branch and wait for Render to finish. Keep the existing URL, Turso database and environment variables. The new run-session, completed-result journal and Ranked escape-time tables initialize automatically; no manual upload or account reset is required.
 
-Version 1.1.3 includes changes to both public HTML clients and server.cjs (registered player names), plus protocol 22. Update all files together, let Render finish its deployment, then refresh every player's game tab before starting a new room. Controls are E for interactions, Shift+E for vents, and Space for jump.
+Both clients use version **1.4.7 / protocol 37**. Everyone must refresh after deployment. Update between rounds because deployments disconnect active games. Already journaled completed results recover after restart; active unfinished games do not survive deployment. Browser-queued solo results retry on the same saved account when the game is reopened with its browser storage intact.
+
+Controls remain F for interactions, Shift+F for vents, R to drop, and Space to jump. This archive has not been deployed by this chat.
