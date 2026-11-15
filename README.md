@@ -1,16 +1,39 @@
-# CU Escape Website — release 1.4.2
+# CU Escape Website — release 1.4.3
 
 This is the current ENS + SBCC game, with Key and Puzzle modes, desktop/mobile controls, and an included multiplayer relay. This archive updates the supplied live version; the changes in this package have not been deployed by this chat.
 
-## Current update: 1.4.2
+## Current update: 1.4.3
 
-Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 32.
+Upload all extracted files to the existing linked repository and commit; Render can auto-deploy the linked branch. This package has not itself been deployed. All players must refresh after deployment: the new client protocol is 33.
 
-### Turso and 100 achievements
+### Night Notes, personal store and customization
+
+**Night Notes** are cosmetic currency, separate from ranked credits. Finishing a ranked race earns 20 / 17 / 14 / 12 / 10 Notes for first through fifth place. Forfeits and timeouts earn none. Currency awards share the ranked-result transaction and are idempotent, so reconnects and retrying saves cannot award the same race twice. Casual play does not award Notes. There are no real-money purchase endpoints or client-controlled balance updates.
+
+The menu now has **Store**, **Skins & Headgear**, and a wallet button. Each signed-in account receives its own five-item lineup, fixed for the day across devices/reloads. It changes at midnight in `America/New_York`, matching the daily boards. Yesterday's items are excluded; older owned items can recur and are marked Owned. Ordinary slots roll a rarity, then uniformly choose from that tier's eligible items. Store purchases require confirmation, sufficient funds and membership in the account's current rotation. All ownership, balances, lifetime earnings, spending and equipped slots are saved in the account database and do not reset with ranked seasons.
+
+There are **1,772 purchasable cosmetics**, plus two free starter choices. Each of the seven populated rarities has exactly **253 items: 169 skins and 84 headgear pieces**. That makes 1,183 regular skins and 588 headgear items, plus The Afterlight as the sole Singularity skin. Hats include caps, beanies, crowns, halos, horns, antlers, wizard hats, top hats, headphones and visors. Outfits combine both slots. Owned collections are paginated at 24 items to keep large wardrobes usable on mobile. The catalog combines distinct palettes, clothing patterns, trim variants and headgear designs. The store previews and in-game student sprites use the same renderer. Cosmetic IDs must remain stable when extending the catalog; do not delete or rename purchased items. Higher tiers add reactive trim, orbiting sparks and colored mist; chase states intensify effects. These effects do not change speed, collision, capture rules or entity sight. Existing hiding, spectator invisibility and wall occlusion still apply.
+
+| Rarity | Chance per ordinary slot | Price range (Night Notes) |
+| --- | ---: | ---: |
+| Common | 45% | 60–96 |
+| Uncommon | 27% | 350–560 |
+| Rare | 17% | 1,800–2,880 |
+| Epic | 7% | 10,000–16,000 |
+| Legendary | 2.8% | 50,000–80,000 |
+| Exotic | 0.9% | 125,000–200,000 |
+| Mythic | 0.3% | 250,000–400,000 |
+| Singularity | Separate daily check | 1,000,000 |
+
+**The Afterlight is the only Singularity item.** It has an exact 1-in-10,000 (0.01%) check per eligible personal daily rotation, replacing one ordinary slot when selected. It cannot appear again the following day. It uses exclusive prismatic armor, energy shards, aurora mist, orbiting stars and a double eclipse halo. No other item shares this rarity or reaches its price. At the requested 10–20 Notes per completed race, one million Notes requires 50,000–100,000 races before considering other spending.
+
+The original 100 achievements remain. **23 additional currency/collection achievements** bring the total to **123**. Big Pockets requires holding one million Notes at once; other goals track lifetime earnings, spending, collection sizes, skins/headgear and owning The Afterlight. These are server-awarded and cannot be imported as casual browser achievements. Unlocks remain after spending currency. The ten existing secret challenges retain their hidden requirements.
+
+### Persistent progression and achievements
 
 This update adds server-side Turso/libSQL storage using `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`. The existing free Render game service can keep running while accounts and progression are saved externally. The server automatically initializes tables and enables saved profiles/ranked when the connection is ready. See **PERSISTENCE.md** for the deployment steps; no SQLite upload is needed for an empty database. The cloud backend uses asynchronous parameterized SQL, serializes account/credit transactions and retries failed ranked result saves without awarding the same match twice. Multiplayer simulation does not wait for database operations.
 
-The Achievements & Titles tab now lists **100 achievements**, including **10 secret challenges**. Goals cover repeated escapes, both buildings/modes/difficulties, solo and team challenges, speed, clean escapes, collected items, locks, vents, lockers, jumping, crouching, stairs, elevators, rescues, ranked finishes/wins and rank milestones. Secret goals are deliberately very demanding, combining normal gameplay constraints; their names, requirements and titles stay hidden in the browser until earned. The private catalog stays on the server. Casual actions are counted per player, shared in snapshots and retained through host handoff; guest progress stays on that browser, while signed-in progress syncs to the profile. Counters for career goals continue across devices using the saved profile. Existing achievement IDs and title unlocks are retained.
+The Achievements & Titles tab now lists **123 achievements**, including the original 100, **10 secret challenges**, and 23 new currency/collection goals. Goals cover repeated escapes, both buildings/modes/difficulties, solo and team challenges, speed, clean escapes, collected items, locks, vents, lockers, jumping, crouching, stairs, elevators, rescues, ranked finishes/wins and rank milestones. Secret goals are deliberately very demanding, combining normal gameplay constraints; their names, requirements and titles stay hidden in the browser until earned. The private catalog stays on the server. Casual actions are counted per player, shared in snapshots and retained through host handoff; guest progress stays on that browser, while signed-in progress syncs to the profile. Counters for career goals continue across devices using the saved profile. Existing achievement IDs and title unlocks are retained.
 
 ### My Rank
 
@@ -198,3 +221,5 @@ Release 1.3.7 verification: all 77 automated tests passed, with final focused ac
 Release 1.3.8 verification: all 79 automated tests passed. Rank progress tests check all ranks and levels at 0/75/149 credits within a level, exact promotion boundaries, Pro level 5 maximum, fresh menu data, menu/result progress panels on desktop/mobile, and saved account/ranked integration. The update has not been publicly deployed by this chat.
 
 Release 1.4.2 verification: all 86 automated tests passed, plus final focused persistence/transaction checks. Turso tests use a local implementation of the documented SQL-over-HTTP protocol backed by SQLite; they cover automatic schema creation, account/title/rank/leaderboard retention after replacing the game server, concurrent credit writes, idempotent match awards, connection failure, asynchronous ranked saving and retries while simulation continues. Catalog tests cover exactly 100 unique goals, ten redacted secrets, satisfiable rule combinations, locked/earned secret-title disclosure, real pickup/drop/vent/jump/crouch counters and snapshot/host-handoff continuity. This is automated local verification, not a live connection test against your private Turso database, nor a hardware iPhone playtest. No public deployment was performed by this chat.
+
+Release 1.4.3 verification: all 96 automated tests passed in the full regression run, with final focused checks also passing. New tests cover eight rarity tiers, 253 purchasable items in each of the seven populated tiers, The Afterlight as the only Singularity item, its 1-in-10,000 eligible rotation check, five fixed personal offers, different account lineups, no consecutive-day repeats, Cedarville/DST midnight resets, placement payouts and forfeit behavior, duplicate award/purchase protection, insufficient-fund and ownership checks, million-Note spending/Big Pockets, session/season/restart retention, Turso backend replacement, desktop/mobile store and wardrobe flows, large-inventory pagination, unchanged movement/collision, and live multiplayer appearance updates including interpolated sprites and spoofed-look rejection. Native canvas previews of all eight rarity tiers were inspected. Turso integration was tested against a local implementation of its documented protocol; no private live-database connection, hardware iPhone test or public deployment was performed by this chat.

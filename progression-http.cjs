@@ -20,6 +20,9 @@ function createProgressionHttp({store,enabled,send,broadcast}){
    }
    else if(url.pathname==='/api/profile'&&req.method==='POST'){if((input.token||auth)&&!(await store.profile(input.token||auth)))throw Error('Your saved session expired. Log in again.');result=(await store.account(input.token||auth,input.name));}
    else if(url.pathname==='/api/profile'&&req.method==='GET'){result={profile:(await store.profile(auth))};if(!result.profile)throw Error('Profile not found.');}
+   else if(url.pathname==='/api/store'&&req.method==='GET')result=await store.shop(auth);
+   else if(url.pathname==='/api/store/buy'&&req.method==='POST')result=await store.buyCosmetic(auth,input.item,input.day);
+   else if(url.pathname==='/api/cosmetics/equip'&&req.method==='POST')result={profile:await store.equipCosmetic(auth,input.slot,input.item)};
    else if(url.pathname==='/api/profile/achievements'&&req.method==='POST')result={profile:await store.saveAchievements(auth,input)};
    else if(url.pathname==='/api/profile/title'&&req.method==='POST')result={profile:(await store.setTitle(auth,String(input.title||'')))};
    else if(url.pathname==='/api/leaderboards'&&req.method==='GET')result=(await store.board(Object.fromEntries(url.searchParams),auth));

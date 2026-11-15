@@ -1,6 +1,6 @@
-# Turso storage — update 1.4.2
+# Turso storage — update 1.4.3
 
-The game now connects directly to an external Turso/libSQL database. With this option, Render runs the game and multiplayer server; Turso stores accounts, password hashes, sessions, achievements, selected titles, ranks and leaderboards. A paid Render disk is not required for Turso mode. The connection is server-side; database credentials never belong in HTML or GitHub.
+The game now connects directly to an external Turso/libSQL database. With this option, Render runs the game and multiplayer server; Turso stores accounts, password hashes, sessions, achievements, selected titles, ranks, leaderboards, wallets, permanent cosmetic ownership, equipped looks and personal daily shops. A paid Render disk is not required for Turso mode. The connection is server-side; database credentials never belong in HTML or GitHub.
 
 ## Finish the setup you already started
 
@@ -8,7 +8,7 @@ The game now connects directly to an external Turso/libSQL database. With this o
 2. Open the existing game service in Render. In **Environment**, retain the `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` values you already added. Both are required. The token must permit reads and writes. Use your database URL, not the dashboard page URL.
 3. Choose **Save, rebuild, and deploy**, or deploy the latest GitHub commit. Keep Node 24 and one service instance.
 4. The server connects to Turso and creates all tables automatically. You do not need to upload a SQLite file or manually create tables when starting with an empty database. Existing tables are preserved using `CREATE TABLE IF NOT EXISTS`.
-5. Open `https://YOUR-GAME-HOST/api/status`. The response should include `"persistent":true`, `"storage":"turso"` and `"achievements":100`. No credentials appear in this response.
+5. Open `https://YOUR-GAME-HOST/api/status`. The response should include `"persistent":true`, `"storage":"turso"` and `"achievements":123`. No credentials appear in this response.
 6. Refresh the game on every device. Create a username/password account, equip an unlocked title and test an escape. Redeploy/restart the game service and log back in to confirm that saved progress remains. Test Ranked with five separate signed-in profiles.
 
 If the deployment fails during storage initialization, check both environment variable names, the copied URL, token read/write permissions and Turso service availability. The server fails startup rather than silently saving accounts to Render's temporary local files. A fully initialized game can continue simulating while an individual ranked result waits for a database retry; result messages are sent after the save succeeds. Results that cannot reach the database before the game process is terminated cannot be guaranteed recoverable.
@@ -27,7 +27,7 @@ Turso is an external service with its own plan limits and availability. Monitor 
 
 Passwords use salted async scrypt. The browser saves a random thirty-day session token instead of the password. Logging out revokes that device session. Accounts and progression follow the profile ID, so signing in on another device restores the same progress. There is no email-based password reset in this release; keep your password safely. Older recovery-code profiles can attach a username/password if their records were preserved.
 
-There are 100 achievements, including ten secret challenges. Secret names, goals and titles are withheld from the public browser catalog and from unearned profile responses. Qualifying signed-in progress reveals them. Casual statistics and achievements are community reported by the game client, as casual run submissions already are. They are not comprehensive anti-cheat verification. Ranked credits, ranked finish/win milestones and rank achievements are awarded by the authoritative server; importing casual progress never grants them.
+There are 123 achievements, including the original hundred, ten secret challenges and 23 new server-awarded currency/collection goals. Secret names, goals and titles are withheld from the public browser catalog and from unearned profile responses. Qualifying signed-in progress reveals them. Casual statistics and achievements are community reported by the game client, as casual run submissions already are. They are not comprehensive anti-cheat verification. Ranked credits, ranked finish/win milestones and rank achievements are awarded by the authoritative server; importing casual progress never grants them.
 
 Daily boards use `America/New_York` dates. Ranked seasons change at midnight on the 15th there; matches belong to the season they started. All-time casual records do not automatically reset. Keep the database and backups to retain them.
 
@@ -40,3 +40,7 @@ Without Turso variables, local development still uses `data/cu-escape.sqlite`, o
 - Turso SQL over HTTP: https://docs.turso.tech/sdk/http/reference
 - Turso import: https://docs.turso.tech/cloud/migrate-to-turso
 - Render environment settings: https://render.com/docs/configure-environment-variables
+
+## Economy persistence
+
+Update 1.4.3 creates its wallet, currency-award, ownership, equipment, shop-seed and personal-rotation tables automatically. Keep the same database and environment settings. Existing accounts and achievement IDs are preserved; Notes start at zero, with no retroactive payouts for races recorded before this feature. Wallets and items do not reset with ranked seasons. Purchases are atomic and owned items prevent duplicate charges after a network retry. Shop rotation rows use account ID and Cedarville date; refreshing, changing a name or logging in elsewhere does not reroll them. Retain the private shop seed with the database. No secret token or seed is sent to clients.

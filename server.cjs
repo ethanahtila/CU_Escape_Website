@@ -37,7 +37,9 @@ function createGameServer(options = {}) {
     '/robots.txt': ['robots.txt', 'text/plain; charset=utf-8'],
     '/progression.js':['progression.js','application/javascript; charset=utf-8'],
     '/achievement-catalog.js':['achievement-catalog.js','application/javascript; charset=utf-8'],
-    '/achievement-rules.js':['achievement-rules.js','application/javascript; charset=utf-8']
+    '/achievement-rules.js':['achievement-rules.js','application/javascript; charset=utf-8'],
+    '/cosmetics-catalog.js':['cosmetics-catalog.js','application/javascript; charset=utf-8'],
+    '/cosmetics.js':['cosmetics.js','application/javascript; charset=utf-8']
   };
   const certPath=options.certPath||process.env.TLS_CERT_PATH,keyPath=options.keyPath||process.env.TLS_KEY_PATH;
   if(!!certPath!==!!keyPath)throw Error('Set both TLS_CERT_PATH and TLS_KEY_PATH.');
@@ -97,7 +99,7 @@ function createGameServer(options = {}) {
     });
   });
   wss.on('connection', async(ws, name, displayName, meta={}) => {ws.on('error',()=>{});try{await ready;
-    ws.authToken=meta.token;ws.profile=await progression.profile(meta.token);if(ws.readyState!==WebSocket.OPEN)return;ws.equippedTitle=meta.title==null?progression.titleName(ws.profile?.title):ACHIEVEMENTS.some(a=>a.id===meta.title&&!a.serverOnly&&!a.secret)||ws.profile?.titles.includes(meta.title)?progression.titleName(meta.title):'';
+    ws.authToken=meta.token;ws.profile=await progression.profile(meta.token);if(ws.readyState!==WebSocket.OPEN)return;ws.equippedCosmetics=ws.profile?.cosmetics?.equipped||{skin:'default',head:'none'};ws.equippedTitle=meta.title==null?progression.titleName(ws.profile?.title):ACHIEVEMENTS.some(a=>a.id===meta.title&&!a.serverOnly&&!a.secret)||ws.profile?.titles.includes(meta.title)?progression.titleName(meta.title):'';
     if(meta.ranked){if(!persistent||!ws.profile){error(ws,'profile_required',persistent?'Create or recover your profile before ranked.':'Ranked requires persistent storage. See PERSISTENCE.md.');ws.close(1008);return;}if(clientCount()+ranked.sockets.size>=maxClients){ws.close(1013);return;}ranked.enqueue(ws,ws.profile);return;}
     if (!/^[A-Za-z0-9_-]{1,32}$/.test(name)) {
       error(ws, 'invalid_game_id', 'Use a room name with 1–32 letters, numbers, underscores or hyphens.'); ws.close(1008); return;
@@ -111,8 +113,8 @@ function createGameServer(options = {}) {
     let tokens = 120, lastRefill = Date.now();
     room.players.set(id, ws); room.host = Math.min(...room.players.keys());
     // Welcome is queued first, so a new student knows their identity before a snapshot arrives.
-    send(ws, { type: 'welcome', room:room.name, playerId: id, players: [...room.players.keys()],playerNames:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.playerName])),playerTitles:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.equippedTitle||''])) });
-    broadcast(room, { type: 'player_joined', playerId: id, name:ws.playerName,title:ws.equippedTitle||'' }, ws);
+    send(ws, { type: 'welcome', room:room.name, playerId: id, players: [...room.players.keys()],playerNames:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.playerName])),playerCosmetics:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.equippedCosmetics])),playerTitles:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.equippedTitle||''])) });
+    broadcast(room, { type: 'player_joined', playerId: id, name:ws.playerName,title:ws.equippedTitle||'',cosmetics:ws.equippedCosmetics }, ws);
     ws.on('pong', () => { ws.alive = true; });
     ws.on('error', () => {});
     ws.on('message', async(bytes, binary) => {try{
@@ -125,13 +127,13 @@ function createGameServer(options = {}) {
       if (!message || typeof message !== 'object' || Array.isArray(message)) { error(ws, 'invalid_message', 'Invalid game message.'); return; }
       if (!['ens_state', 'ens_input', 'ens_action', 'ens_sync', 'ens_room', 'ens_view', 'ens_profile'].includes(message.type)) { error(ws, 'invalid_message', 'Unsupported game message.'); return; }
       if(message.type==='ens_state'&&(message.mapId==='ranked'||message.ranked)){error(ws,'matchmaking_only','Ranked is only available through the shared matchmaking queue.');return;}
-      if(message.type==='ens_profile'){ws.profile=await progression.profile(meta.token);if(ws.readyState!==WebSocket.OPEN)return;const title=message.titleId;if(typeof title==='string'){if(title===''||ws.profile?.titles.includes(title)||message.localAchievement===true&&ACHIEVEMENTS.some(a=>a.id===title&&!a.serverOnly&&!a.secret))ws.equippedTitle=progression.titleName(title);}else if(ws.profile)ws.equippedTitle=progression.titleName(ws.profile.title);broadcast(room,{type:'profile_changed',playerId:id,title:ws.equippedTitle||''});return;}
+      if(message.type==='ens_profile'){ws.profile=await progression.profile(meta.token);if(ws.readyState!==WebSocket.OPEN)return;ws.equippedCosmetics=ws.profile?.cosmetics?.equipped||{skin:'default',head:'none'};const title=message.titleId;if(typeof title==='string'){if(title===''||ws.profile?.titles.includes(title)||message.localAchievement===true&&ACHIEVEMENTS.some(a=>a.id===title&&!a.serverOnly&&!a.secret))ws.equippedTitle=progression.titleName(title);}else if(ws.profile)ws.equippedTitle=progression.titleName(ws.profile.title);broadcast(room,{type:'profile_changed',playerId:id,title:ws.equippedTitle||'',cosmetics:ws.equippedCosmetics});return;}
       if(message.type==='ens_room'){if(id!==room.host){error(ws,'host_only','Only the host can rename the room.');return;}if(room.phase!=='lobby'){error(ws,'round_active','Return the group to the lobby before renaming.');return;}const next=message.room;if(typeof next!=='string'||!/^[A-Za-z0-9_-]{1,32}$/.test(next)){error(ws,'invalid_game_id','Invalid room name.');return;}if(next===room.name)return;if(rooms.has(next)){error(ws,'room_exists','That room name is already in use. Choose another name.');return;}rooms.delete(room.name);room.name=next;rooms.set(next,room);broadcast(room,{type:'room_renamed',room:next});return;}
       if (message.type === 'ens_state' && (id !== room.host || message.host !== id)) { error(ws, 'host_only', 'Only the current host may publish game state.'); return; }
       if (message.type === 'ens_action' && !['start', 'restart', 'lobby', 'use', 'locker', 'elevator_button', 'drop_key', 'reenter', 'spectate', 'spec_release', 'spec_fly', 'spec_follow', 'spec_siren', 'spec_boost', 'spec_use'].includes(message.action)) { error(ws, 'invalid_message', 'Unsupported action.'); return; }
       if (message.type === 'ens_action' && ['start', 'restart', 'lobby'].includes(message.action) && id !== room.host) { error(ws, 'host_only', 'Only the host may start or restart the round.'); return; }
       if(message.type==='ens_view'){if(message.round!==room.round||!Number.isInteger(message.seq)||!message.camera||bytes.length>2048)return;for(const [peerId,peer]of room.players)if(peerId!==id&&room.roles.has(peerId))send(peer,{...message,playerId:id});return;}
-      const verified = { ...message, playerId: id };
+      const verified = { ...message, playerId: id };if(message.type==='ens_state'&&Array.isArray(message.players))verified.players=message.players.map(a=>{if(!Array.isArray(a))return a;const row=[...a];row[36]=room.players.get(row[0])?.equippedCosmetics||{skin:'default',head:'none'};return row;});
       if (message.type === 'ens_state') {progressionHttp.observe(room,message).catch(()=>console.warn('A completed casual run could not be saved.'));room.phase=message.phase;room.round=message.round;if(Array.isArray(message.players))room.roles=new Set(message.players.filter(a=>Array.isArray(a)&&a[30]?.spectator).map(a=>a[0]));broadcast(room, verified, ws);}
       else if (room.host !== id) send(room.players.get(room.host), verified);
     }catch{error(ws,'storage_unavailable','Saved profiles are temporarily unavailable. Please try again.');}
