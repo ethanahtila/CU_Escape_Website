@@ -1,15 +1,15 @@
-# CU Escape — 1.5.1
+# CU Escape — 1.5.2
 
 A browser escape game with ENS and SBCC, Key and Puzzle modes, desktop/mobile controls, solo play, room-name multiplayer, saved accounts and four-student Ranked matchmaking.
 
-Read [UPDATE_1.5.1.md](UPDATE_1.5.1.md) for site-wide Google Tag Manager installation and usage events. The SSC clearance repair and photo-guided terrain from 1.5.0 remain. This archive has not been deployed by this chat. The Flex rewards and achievement backpay from 1.4.6 and rendering fixes from 1.4.5 remain.
+Read [UPDATE_1.5.2.md](UPDATE_1.5.2.md) for site-wide Google Tag Manager installation and usage events. The SSC clearance repair and photo-guided terrain from 1.5.0 remain. This archive has not been deployed by this chat. The Flex rewards and achievement backpay from 1.4.6 and rendering fixes from 1.4.5 remain.
 
 ## Install or update
 
 1. Extract the ZIP. Replace all corresponding files in the existing linked GitHub repository, including the new `campus.cjs`, `public/campus.js` and `public/ranked-setup.js`.
 2. Commit to the branch Render deploys. Wait for the deployment to finish.
 3. Keep the existing `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` environment variables and database. New tables initialize automatically; accounts, rank, achievements and purchases stay intact.
-4. Have everyone refresh. Both editions use version **1.5.1 / protocol 41**. Old open tabs cannot join an updated round.
+4. Have everyone refresh. Both editions use version **1.5.2 / protocol 41**. Old open tabs cannot join an updated round.
 
 See [DEPLOY.md](DEPLOY.md) for hosting and [PERSISTENCE.md](PERSISTENCE.md) for Turso and backups. Use one Node service instance: its real-time rooms, shared matchmaking and campus world are held in that process. Multi-instance hosting requires a shared real-time broker.
 
@@ -48,6 +48,8 @@ The map is shared with your team and reveals markers only in discovered areas. K
 ## Accounts, records and achievements
 
 Sign up with a unique username and a password of 12–128 characters. Usernames are case-insensitive. Passwords use salted scrypt hashes; they are not stored in plain text. Login restores rank, achievements, titles, purchases and equipped cosmetics on another device. Sessions last 30 days. There is no email password-reset service, so keep the password safely. Legacy recovery-code profiles can be linked to a username/password.
+
+**Battle Passes** opens the free 100-level standard pass (two months) and free 250-level ranked pass (three months). Rewards arrive automatically every four / two levels. Standard games grant standard XP; ranked results grant ranked XP. All earned rewards stay on the account across seasons. **Character & Items** equips skins, headgear and a hand prop, with 350 new shop hand items across the seven ordinary rarities. Deluxe passes and payments are not enabled. See [UPDATE_1.5.2.md](UPDATE_1.5.2.md) for XP, season and deployment details.
 
 The menu includes **Achievements & Titles**, **My Rank**, **Leaderboards**, **Store**, **Skins & Headgear**, and **Trading Hall**. All 123 achievements remain, including ten secret challenges; each now pays 50, 100 or 150 Flex Dollars once, with earlier unlocks automatically credited when the saved profile loads. No reset is needed; earned rank and achievement titles share one equipped slot. My Rank shows progress to the next level, not merely the next rank. Guest achievements remain on the current browser; server progression requires persistent storage.
 

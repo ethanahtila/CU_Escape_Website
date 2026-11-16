@@ -1,7 +1,7 @@
 'use strict';
 (()=>{
  if(window.CUAnalytics)return;
- const VERSION='1.5.1',sections=new Set(['menu','login','signup','profile','achievements','titles','leaderboards','rank','store','skins','rarities','campus','waiting_lobby','trading','ranked_queue','public_lobbies','gameplay','results']),seen=new Set();let lastSection='';
+ const VERSION='1.5.2',sections=new Set(['menu','login','signup','profile','achievements','titles','leaderboards','rank','store','skins','rarities','campus','waiting_lobby','trading','ranked_queue','public_lobbies','gameplay','results']),seen=new Set();let lastSection='';
  const device=()=>location.pathname==='/mobile'?'mobile':location.pathname==='/desktop'?'desktop':'entry';
  function push(event,params={}){try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event,game_version:VERSION,device_type:device(),game_section:undefined,play_type:undefined,game_map:undefined,game_mode:undefined,game_difficulty:undefined,player_count:undefined,result:undefined,duration_seconds:undefined,placement:undefined,...params});return true;}catch{return false;}}
  function once(key){if(seen.has(key))return false;seen.add(key);if(seen.size>512)seen.delete(seen.values().next().value);return true;}

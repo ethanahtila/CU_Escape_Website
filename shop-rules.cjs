@@ -1,5 +1,6 @@
 'use strict';
 const crypto=require('node:crypto'),CATALOG=require('./cosmetics-catalog.json'),BY_ID=new Map(CATALOG.items.map(i=>[i.id,i]));
+const PassRules=require('./public/pass-rules.js'),catalogGet=BY_ID.get.bind(BY_ID);BY_ID.get=id=>catalogGet(id)||PassRules.itemById(id);BY_ID.has=id=>!!BY_ID.get(id);
 function dailyItems(seed,profile,day,excluded=[],injected){let counter=0;const random=injected||((bound)=>{const ceiling=Math.floor(4294967296/bound)*bound;let value;do{value=crypto.createHmac('sha256',seed).update(profile+':'+day+':'+counter++).digest().readUInt32BE(0);}while(value>=ceiling);return value%bound;});const blocked=new Set(excluded),selected=[];
  if(!blocked.has('afterlight')&&random(10000)===0)selected.push('afterlight');
  while(selected.length<5){const roll=random(10000);let cumulative=0,rarity=CATALOG.rarities[0].id;for(const r of CATALOG.rarities){cumulative+=Math.round(r.weight*100);if(roll<cumulative){rarity=r.id;break;}}const pool=CATALOG.items.filter(i=>!i.starter&&i.id!=='afterlight'&&i.rarity===rarity&&!blocked.has(i.id)&&!selected.includes(i.id));selected.push(pool[random(pool.length)].id);}

@@ -46,6 +46,8 @@ function createGameServer(options = {}) {
     '/achievement-catalog.js':['achievement-catalog.js','application/javascript; charset=utf-8'],
     '/achievement-rules.js':['achievement-rules.js','application/javascript; charset=utf-8'],
     '/cosmetics-catalog.js':['cosmetics-catalog.js','application/javascript; charset=utf-8'],
+    '/pass-rules.js':['pass-rules.js','application/javascript; charset=utf-8'],
+    '/hand-items.js':['hand-items.js','application/javascript; charset=utf-8'],
     '/cosmetics.js':['cosmetics.js','application/javascript; charset=utf-8']
   };
   const certPath=options.certPath||process.env.TLS_CERT_PATH,keyPath=options.keyPath||process.env.TLS_KEY_PATH;
