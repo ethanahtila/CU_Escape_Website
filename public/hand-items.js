@@ -4,6 +4,7 @@
  function item(id){return catalog.get(id)||window.CUPassRules?.itemById(id);}
  function draw(ctx,id,x,y,size,time=0){const o=item(id);if(!o||o.type!=='hand'||o.id==='emptyhand')return;ctx.save();ctx.translate(x,y);ctx.scale(size,size);ctx.lineWidth=.045;ctx.lineJoin='round';const box=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,h);},line=(p,c=o.accent,w=.04)=>{ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();p.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();},circle=(x,y,r,c)=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();},poly=(p,c)=>{ctx.fillStyle=c;ctx.beginPath();p.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();};
   const tier=window.CU_COSMETICS.rarities.findIndex(r=>r.id===o.rarity);if(tier>=4){ctx.shadowColor=o.accent;ctx.shadowBlur=5+tier;}
+  if(o.passDesign&&window.PassArt?.hand(ctx,o,time)){ctx.restore();return;}
   if(o.shape==='lantern'){line([[-.19,-.42],[-.19,-.58],[.19,-.58],[.19,-.42]]);box(-.25,-.4,.5,.65,o.color);box(-.17,-.3,.34,.43,o.accent);box(-.3,-.44,.6,.09,o.color);box(-.29,.21,.58,.09,o.color);line([[0,-.32],[0,.18]],o.color);}
   if(o.shape==='mug'){box(-.24,-.32,.45,.61,o.color);line([[.2,-.22],[.4,-.22],[.4,.14],[.2,.14]],o.accent,.07);line([[-.17,-.28],[.15,-.28]],o.accent,.07);box(-.11,-.09,.2,.18,o.accent);}
   if(o.shape==='book'){box(-.3,-.44,.58,.79,o.color);box(-.23,-.37,.52,.65,'#e3dcc5');box(-.28,-.4,.51,.68,o.color);line([[-.2,-.35],[-.2,.24]],o.accent);line([[-.1,-.16],[.13,-.16],[-.1,-.06],[.13,-.06]]);}
