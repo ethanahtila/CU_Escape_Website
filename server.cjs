@@ -1,4 +1,5 @@
 'use strict';
+const {createChat}=require('./chat.cjs');
 const {createCampus}=require('./campus.cjs');
 const {createCampusMatchmaking}=require('./campus-matchmaking.cjs');
 const http = require('node:http');
@@ -46,6 +47,7 @@ function createGameServer(options = {}) {
     '/achievement-catalog.js':['achievement-catalog.js','application/javascript; charset=utf-8'],
     '/achievement-rules.js':['achievement-rules.js','application/javascript; charset=utf-8'],
     '/cosmetics-catalog.js':['cosmetics-catalog.js','application/javascript; charset=utf-8'],
+    '/chat.js':['chat.js','application/javascript; charset=utf-8'],
     '/pass-art.js':['pass-art.js','application/javascript; charset=utf-8'],
     '/pass-rules.js':['pass-rules.js','application/javascript; charset=utf-8'],
     '/hand-items.js':['hand-items.js','application/javascript; charset=utf-8'],
@@ -86,10 +88,11 @@ function createGameServer(options = {}) {
   const broadcast = (room, message, except) => {
     for (const ws of room.players.values()) if (ws !== except) send(ws, message);
   };
+  const chat=createChat({send,now:options.now});
   progressionHttp=createProgressionHttp({store:progression,enabled:persistent,send,broadcast});
-  ranked=createRanked({store:progression,send,now:options.now,chooseMap:options.chooseRankedMap,maxMatches:options.maxRankedMatches});
+  ranked=createRanked({store:progression,send,chat,now:options.now,chooseMap:options.chooseRankedMap,maxMatches:options.maxRankedMatches});
   const publicLobbies=createCampusMatchmaking({rooms,maxPlayers,now:options.now,maxReservations:maxClients});
-  campus=createCampus({store:progression,send,publicLobbies,maxClients,now:options.now,canTrade:id=>!!id&&![...rooms.values()].some(r=>r.phase==='running'&&[...r.players.values()].some(p=>p.profile?.id===id))&&![...ranked.matches.values()].some(m=>m.players.some(p=>p.profile.id===id&&!p.result))});
+  campus=createCampus({store:progression,send,chat,publicLobbies,maxClients,now:options.now,canTrade:id=>!!id&&![...rooms.values()].some(r=>r.phase==='running'&&[...r.players.values()].some(p=>p.profile?.id===id))&&![...ranked.matches.values()].some(m=>m.players.some(p=>p.profile.id===id&&!p.result))});
   const originAllowed = req => {
     if (!req.headers.origin) return false;
     try {
@@ -128,6 +131,7 @@ function createGameServer(options = {}) {
     room.players.set(id, ws); room.host = Math.min(...room.players.keys());
     // Welcome is queued first, so a new student knows their identity before a snapshot arrives.
     send(ws, { type: 'welcome', room:room.name, settings:room.publicBuilding?room.settings:null, publicBuilding:room.publicBuilding||null, playerId: id, players: [...room.players.keys()],playerNames:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.playerName])),playerCosmetics:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.equippedCosmetics])),playerTitles:Object.fromEntries([...room.players].map(([id,peer])=>[id,peer.equippedTitle||''])) });
+    chat.join(room,ws,'Party');
     broadcast(room, { type: 'player_joined', playerId: id, name:ws.playerName,title:ws.equippedTitle||'',cosmetics:ws.equippedCosmetics }, ws);
     ws.on('pong', () => { ws.alive = true; });
     ws.on('error', () => {});
@@ -139,6 +143,7 @@ function createGameServer(options = {}) {
       let message;
       try { message = JSON.parse(bytes.toString()); } catch { error(ws, 'invalid_json', 'Invalid JSON.'); return; }
       if (!message || typeof message !== 'object' || Array.isArray(message)) { error(ws, 'invalid_message', 'Invalid game message.'); return; }
+      if(chat.receive(room,ws,ws.playerName,message,room.players.values(),'Party'))return;
       if (!['ens_state', 'ens_input', 'ens_action', 'ens_sync', 'ens_room', 'ens_profile'].includes(message.type)) { error(ws, 'invalid_message', 'Unsupported game message.'); return; }
       if(message.type==='ens_state'&&(message.mapId==='ranked'||message.ranked)){error(ws,'matchmaking_only','Ranked is only available through the shared matchmaking queue.');return;}
       if(message.type==='ens_profile'){ws.profile=await progression.profile(meta.token);if(ws.readyState!==WebSocket.OPEN)return;ws.equippedCosmetics=ws.profile?.cosmetics?.equipped||{skin:'default',head:'none'};const title=message.titleId;if(typeof title==='string'){if(title===''||ws.profile?.titles.includes(title)||message.localAchievement===true&&ACHIEVEMENTS.some(a=>a.id===title&&!a.serverOnly&&!a.secret))ws.equippedTitle=progression.titleName(title);}else if(ws.profile)ws.equippedTitle=progression.titleName(ws.profile.title);broadcast(room,{type:'profile_changed',playerId:id,title:ws.equippedTitle||'',cosmetics:ws.equippedCosmetics});return;}

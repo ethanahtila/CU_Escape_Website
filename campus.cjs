@@ -1,7 +1,7 @@
 'use strict';
 const crypto=require('node:crypto'),{CATALOG,BY_ID}=require('./shop-rules.cjs');
 const world=require('./public/campus-world.js');const TABLES=world.tables;
-function createCampus({store,send,canTrade=()=>true,now=Date.now,maxClients=256,publicLobbies=null}){
+function createCampus({store,send,chat,canTrade=()=>true,now=Date.now,maxClients=256,publicLobbies=null}){
  const peers=new Map(),tables=new Map(TABLES.map(t=>[t.id,{...t,seats:[null,null],offers:[[],[]],accepted:[false,false],revision:0,locked:false}]));let counter=0;
  const power=items=>items.reduce((n,id)=>n+2**CATALOG.rarities.findIndex(r=>r.id===BY_ID.get(id)?.rarity),0);
  const state=t=>({type:'campus_trade',table:t.id,revision:t.revision,seats:t.seats.map(id=>{const p=peers.get(id);return p?{id,name:p.name}:null}),offers:t.offers,values:t.offers.map(power),accepted:t.accepted,locked:t.locked});
@@ -10,7 +10,8 @@ function createCampus({store,send,canTrade=()=>true,now=Date.now,maxClients=256,
  function leaveSeat(p){if(p.table==null)return;const t=tables.get(p.table);if(t.locked)return;t.seats=t.seats.map(id=>id===p.id?null:id);p.table=null;reset(t);}
  const validPosition=world.validPosition;
  function join(ws,profile,name,startBuilding){if(peers.size>=maxClients){ws.close(1013,'Campus lobby full');return;}const entry=world.portal(startBuilding)?.entry;const p={id:++counter,ws,profile,name:profile?.name||name||'Student',x:entry?.x??world.spawn.x+(counter%5)*1.8,y:entry?entry.y+7:world.spawn.y+22, a:world.spawn.a,table:null,at:now(),rateAt:now(),messages:0};peers.set(p.id,p);ws.alive=true;ws.on('pong',()=>{ws.alive=true});send(ws,{type:'campus_welcome',id:p.id,x:p.x,y:p.y,a:p.a,tables:TABLES});
-  ws.on('message',async bytes=>{try{if(now()-p.rateAt>=1000){p.rateAt=now();p.messages=0;}if(++p.messages>35||bytes.length>4096)return;const m=JSON.parse(bytes.toString());if(m.type==='move'&&p.table==null){const elapsed=Math.min(.5,Math.max(.025,(now()-p.at)/1000)),distance=Math.hypot(m.x-p.x,m.y-p.y);p.at=now();if(validPosition(m.x,m.y)&&world.canMove(p.x,p.y,m.x,m.y)&&distance<=elapsed*(world.sprintSpeed+1)+3){p.x=m.x;p.y=m.y;if(Number.isFinite(m.a))p.a=m.a;}else send(ws,{type:'campus_correction',x:p.x,y:p.y,a:p.a});return;}
+  chat?.join(peers,ws,'Public');
+  ws.on('message',async bytes=>{try{if(now()-p.rateAt>=1000){p.rateAt=now();p.messages=0;}if(++p.messages>35||bytes.length>4096)return;const m=JSON.parse(bytes.toString());if(chat?.receive(peers,ws,p.name,m,[...peers.values()].map(p=>p.ws),'Public'))return;if(m.type==='move'&&p.table==null){const elapsed=Math.min(.5,Math.max(.025,(now()-p.at)/1000)),distance=Math.hypot(m.x-p.x,m.y-p.y);p.at=now();if(validPosition(m.x,m.y)&&world.canMove(p.x,p.y,m.x,m.y)&&distance<=elapsed*(world.sprintSpeed+1)+3){p.x=m.x;p.y=m.y;if(Number.isFinite(m.a))p.a=m.a;}else send(ws,{type:'campus_correction',x:p.x,y:p.y,a:p.a});return;}
    if(['public_browse','public_create','public_join'].includes(m.type)){if(!publicLobbies)throw Error('Public building lobbies are unavailable.');send(ws,publicLobbies.request(p,m));return;}
    if(m.type==='refresh'){p.profile=await store.profile(ws.authToken);return;}if(m.type==='stand'){leaveSeat(p);return;}
    if(m.type==='sit'){if(!p.profile?.username)throw Error('Log in to trade cosmetics.');if(!canTrade(p.profile.id))throw Error('Finish or leave your current match before trading.');const t=tables.get(m.table);if(!t||t.locked||Math.hypot(p.x-t.x,p.y-t.y)>10)return;if([...peers.values()].some(q=>q!==p&&q.table!=null&&q.profile?.id===p.profile.id))throw Error('This account is already seated.');const seat=t.seats.indexOf(null);if(seat<0)return;leaveSeat(p);t.seats[seat]=p.id;p.table=t.id;p.x=t.x+(seat?2.8:-2.8);p.y=t.y;reset(t);return;}

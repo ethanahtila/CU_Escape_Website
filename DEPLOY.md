@@ -2,7 +2,7 @@
 
 The project is configured for a Node.js 24 web service and a same-origin secure WebSocket relay. The game is not publicly live until it is deployed to a hosting account.
 
-For version 1.5.3 saved accounts, ranked and leaderboards, read **PERSISTENCE.md**. Add both `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to the existing service environment to use external storage without a paid Render disk. The game initializes its tables automatically. Local SQLite remains an alternative with persistent disk storage.
+For version 1.5.6 saved accounts, ranked and leaderboards, read **PERSISTENCE.md**. Add both `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to the existing service environment to use external storage without a paid Render disk. The game initializes its tables automatically. Local SQLite remains an alternative with persistent disk storage.
 
 ## Render deployment (no custom domain required)
 
@@ -34,18 +34,18 @@ Open `http://localhost:3000`. Local development uses `ws://`; production HTTPS a
 
 This package contains the game, Node server, and WSS relay, but it does not include a hosting account, GitHub repository, domain, or deployed public URL. Those must be created/authorized by the site owner. A static website host alone cannot run the multiplayer relay.
 
-## Updating the existing live service to 1.5.3
+## Updating the existing live service to 1.5.6
 
 Replace all corresponding repository files with this package, including both HTML clients, progression scripts and server modules. Commit to the linked deployment branch and wait for Render to finish. Keep the existing URL, Turso database and environment variables. The new run-session, completed-result journal and Ranked escape-time tables initialize automatically; no manual upload or account reset is required.
 
-Both clients use version **1.5.3 / protocol 41**. Everyone must refresh after deployment. Update between rounds because deployments disconnect active games. Already journaled completed results recover after restart; active unfinished games do not survive deployment. Browser-queued solo results retry on the same saved account when the game is reopened with its browser storage intact.
+Both clients use version **1.5.6 / protocol 41**. Everyone must refresh after deployment. Update between rounds because deployments disconnect active games. Already journaled completed results recover after restart; active unfinished games do not survive deployment. Browser-queued solo results retry on the same saved account when the game is reopened with its browser storage intact.
 
 Controls remain F for interactions, Shift+F for vents, R to drop, and Space to jump. This archive has not been deployed by this chat.
 
-After updating, the main menu should show **Records connected · 1.5.3**. If it reports an incomplete update, replace all corresponding files rather than only the HTML, wait for deployment and refresh. Keep the existing browser storage and saved account so pending results can retry. Profile lists pending saves, actual errors and a retry button. No manual leaderboard submission is needed.
+After updating, the main menu should show **Records connected · 1.5.6**. If it reports an incomplete update, replace all corresponding files rather than only the HTML, wait for deployment and refresh. Keep the existing browser storage and saved account so pending results can retry. Profile lists pending saves, actual errors and a retry button. No manual leaderboard submission is needed.
 
 For campus/public lobbies, include `campus-matchmaking.cjs`, `public/campus-world.js`, `public/campus-renderer.js`, the updated `public/campus.js`, both HTML clients and `server.cjs`. No extra service or external model/CDN dependency is required. Public rooms and campus presence share the existing single Node process. Active lobbies end on a deploy/restart, like other live rooms; accounts and inventory stay in the existing database.
 
-Version 1.5.3 changes the shared `public/campus-world.js` terrain and collision data used by both clients and the campus server. Replace it together with the renderer, campus controls, both HTML files and the version/status files. Commit all corresponding files and refresh after deployment; mixed versions can disagree about walking surfaces. Existing accounts, purchases, rank and progression use the same database with no additional migration.
+Version 1.5.6 changes the shared `public/campus-world.js` terrain and collision data used by both clients and the campus server. Replace it together with the renderer, campus controls, both HTML files and the version/status files. Commit all corresponding files and refresh after deployment; mixed versions can disagree about walking surfaces. Existing accounts, purchases, rank and progression use the same database with no additional migration.
 
 For the analytics update, include `public/analytics.js`, all three HTML pages and `server.cjs`. The server now serves the shared collector and allows the Google tag/Analytics endpoints in the website CSP. No extra Node service or Turso change is required. After deploying, test the container at the live game URL, and connect/publish its Google Analytics destination if not already configured; see ANALYTICS_SETUP.md.

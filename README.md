@@ -1,15 +1,15 @@
-# CU Escape — 1.5.3
+# CU Escape — 1.5.6
 
 A browser escape game with ENS and SBCC, Key and Puzzle modes, desktop/mobile controls, solo play, room-name multiplayer, saved accounts and four-student Ranked matchmaking.
 
-Read [UPDATE_1.5.3.md](UPDATE_1.5.3.md) for site-wide Google Tag Manager installation and usage events. The SSC clearance repair and photo-guided terrain from 1.5.0 remain. This archive has not been deployed by this chat. The Flex rewards and achievement backpay from 1.4.6 and rendering fixes from 1.4.5 remain.
+Read [UPDATE_1.5.1.md](UPDATE_1.5.1.md) for site-wide Google Tag Manager installation and usage events. The SSC clearance repair and photo-guided terrain from 1.5.0 remain. This archive has not been deployed by this chat. The Flex rewards and achievement backpay from 1.4.6 and rendering fixes from 1.4.5 remain.
 
 ## Install or update
 
 1. Extract the ZIP. Replace all corresponding files in the existing linked GitHub repository, including the new `campus.cjs`, `public/campus.js` and `public/ranked-setup.js`.
 2. Commit to the branch Render deploys. Wait for the deployment to finish.
 3. Keep the existing `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` environment variables and database. New tables initialize automatically; accounts, rank, achievements and purchases stay intact.
-4. Have everyone refresh. Both editions use version **1.5.3 / protocol 41**. Old open tabs cannot join an updated round.
+4. Have everyone refresh. Both editions use version **1.5.6 / protocol 41**. Old open tabs cannot join an updated round.
 
 See [DEPLOY.md](DEPLOY.md) for hosting and [PERSISTENCE.md](PERSISTENCE.md) for Turso and backups. Use one Node service instance: its real-time rooms, shared matchmaking and campus world are held in that process. Multi-instance hosting requires a shared real-time broker.
 
@@ -74,3 +74,5 @@ Automated tests cover both device editions, real WebSocket groups, host changes,
 ## Visitor analytics
 
 The supplied Google Tag Manager container **GTM-KNS96ZMB** is installed once in the entry, desktop and mobile pages. All in-page game services share that container. See [ANALYTICS_SETUP.md](ANALYTICS_SETUP.md) to connect/verify a Google Analytics destination and publish the container. Visitor measurement does not require a game account. Service-section and match events are queued in the data layer and can be forwarded using the documented custom-event trigger. This package does not include access to, or publish changes in, your Google account.
+
+Text chat uses **Public** on campus/in waiting areas and automatically switches to **Party** inside a match. The histories are separate. Press **/** to type, **Enter** to send, and **Escape** to close. Press **C** or tap **Quick chat** for twelve clickable callouts while movement remains available. Chat settings can be changed while playing. Messages are limited to 240 characters and the most recent 40 remain in memory. Sending with Send or Enter releases the text cursor so you can walk while the chat stays visible. See [UPDATE_1.5.6.md](UPDATE_1.5.6.md) and [UPDATE_1.5.5.md](UPDATE_1.5.5.md).
