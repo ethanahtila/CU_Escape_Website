@@ -1,3 +1,13 @@
+# Campus model references — current layout 1.5.7
+
+The primary layout references for this revision are the user's ten Google Earth aerial/ground screenshots supplied November 16, 2026. They show the main lake/academic core, the north residential and athletic clusters, field shapes, detached building gaps and an ENS/Tyler-area street view. The original screenshots retain their Google attribution and are not embedded or downloaded as game textures.
+
+Coordinates were manually traced into a common north-up frame. One game unit represents approximately half a meter; relative locations, proportions and exterior heights are estimates rather than a georeferenced survey. The main aerial frame was aligned through repeated lake, DMC, SBCC, SSC, library and ENS landmarks. Older schematic positions do not override those aerial footprints. Uncovered outlying details remain approximate; this update prioritizes the photographed core and athletic areas. Floor-area metadata below is historical context, not an exterior footprint measurement.
+
+The renderer uses original polygon/terrain/field geometry and the existing game materials. The grid is deliberately bounded for mobile performance. Sidewalk surfaces are subdivided along the same ground triangles used by movement. Both campus map and collision use actual traced outlines rather than bounding rectangles.
+
+## Earlier reference notes (prior schematic layout)
+
 # Campus model references and accuracy
 
 ## Layout and names
